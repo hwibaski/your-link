@@ -1,0 +1,7 @@
+package com.yourink;
+
+public class YourLinkAppApiApplication {
+    public static void main(String[] args) {
+        System.out.println("Hello world!");
+    }
+}
