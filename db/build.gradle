@@ -1,0 +1,19 @@
+plugins {
+    id 'java-library'
+    id 'java-test-fixtures'
+}
+
+dependencies {
+    api 'org.flywaydb:flyway-core'
+
+    runtimeOnly 'org.postgresql:postgresql'
+    testFixturesRuntimeOnly 'com.h2database:h2'
+}
+
+tasks.named('bootJar') {
+    enabled = false
+}
+
+tasks.named('jar') {
+    enabled = true
+}

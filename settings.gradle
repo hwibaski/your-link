@@ -1,3 +1,4 @@
 rootProject.name = 'your-link'
 include 'core'
 include 'app-api'
+include 'db'
