@@ -26,20 +26,24 @@ class LinkServiceTest {
         linkRepository.deleteAllInBatch();
     }
 
+    @Nested
     @DisplayName("링크 생성 테스트")
-    @Test
-    void create_link() {
-        // given
-        String title = "타이틀";
-        String linkUrl = "https://www.naver.com";
+    class CreateLinkTest {
+        @DisplayName("링크를 생성한다.")
+        @Test
+        void create_link() {
+            // given
+            String title = "타이틀";
+            String linkUrl = "https://www.naver.com";
 
-        // when
-        var result = linkService.createLink(title, linkUrl);
+            // when
+            var result = linkService.createLink(title, linkUrl);
 
-        // then
-        assertThat(result.id()).isNotNull();
-        assertThat(result.title()).isEqualTo("타이틀");
-        assertThat(result.linkUrl()).isEqualTo("https://www.naver.com");
+            // then
+            assertThat(result.id()).isNotNull();
+            assertThat(result.title()).isEqualTo("타이틀");
+            assertThat(result.linkUrl()).isEqualTo("https://www.naver.com");
+        }
     }
 
     @Nested
