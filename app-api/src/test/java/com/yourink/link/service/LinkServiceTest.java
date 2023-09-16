@@ -65,8 +65,8 @@ class LinkServiceTest {
             var result = linkService.updateLink(savedLink.getId(), titleAfterUpdate, linkUrlAfterUpdate);
 
             // then
-            assertThat(result.title()).isEqualTo("변경 후 타이틀");
-            assertThat(result.linkUrl()).isEqualTo("https://www.google.com");
+            assertThat(result.title()).isEqualTo(titleAfterUpdate);
+            assertThat(result.linkUrl()).isEqualTo(linkUrlAfterUpdate);
         }
 
         @DisplayName("수정하고자 하는 링크가 없을 경우 예외를 발생시킨다.")
