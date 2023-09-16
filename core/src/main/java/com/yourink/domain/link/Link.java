@@ -1,6 +1,7 @@
 package com.yourink.domain.link;
 
 import com.yourink.domain.base.BaseAuditEntity;
+
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.Getter;

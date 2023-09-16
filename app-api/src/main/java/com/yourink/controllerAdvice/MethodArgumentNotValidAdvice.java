@@ -1,11 +1,12 @@
 package com.yourink.controllerAdvice;
 
-import com.yourink.dto.api.ApiResponse;
-import com.yourink.dto.api.ErrorCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.yourink.dto.api.ApiResponse;
+import com.yourink.dto.api.ErrorCode;
 
 @RestControllerAdvice
 public class MethodArgumentNotValidAdvice {
@@ -16,7 +17,7 @@ public class MethodArgumentNotValidAdvice {
         var apiResponse = ApiResponse.createErrorResponse(ErrorCode.BAD_REQUEST.getMessage(), ErrorCode.BAD_REQUEST.getCode());
 
         ex.getFieldErrors()
-                .forEach(fieldError -> apiResponse.addValidation(fieldError.getField(), fieldError.getDefaultMessage()));
+          .forEach(fieldError -> apiResponse.addValidation(fieldError.getField(), fieldError.getDefaultMessage()));
 
         return ResponseEntity
                 .badRequest()

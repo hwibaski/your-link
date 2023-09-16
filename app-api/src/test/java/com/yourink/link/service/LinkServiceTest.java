@@ -1,8 +1,8 @@
 package com.yourink.link.service;
 
-import com.yourink.domain.link.Link;
-import com.yourink.exception.NotFoundException;
-import com.yourink.repository.link.LinkRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -10,8 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import com.yourink.domain.link.Link;
+import com.yourink.exception.NotFoundException;
+import com.yourink.repository.link.LinkRepository;
 
 @SpringBootTest
 class LinkServiceTest {
@@ -26,20 +27,24 @@ class LinkServiceTest {
         linkRepository.deleteAllInBatch();
     }
 
+    @Nested
     @DisplayName("링크 생성 테스트")
-    @Test
-    void create_link() {
-        // given
-        String title = "타이틀";
-        String linkUrl = "https://www.naver.com";
+    class CreateLinkTest {
+        @DisplayName("링크를 생성한다.")
+        @Test
+        void create_link() {
+            // given
+            String title = "타이틀";
+            String linkUrl = "https://www.naver.com";
 
-        // when
-        var result = linkService.createLink(title, linkUrl);
+            // when
+            var result = linkService.createLink(title, linkUrl);
 
-        // then
-        assertThat(result.id()).isNotNull();
-        assertThat(result.title()).isEqualTo("타이틀");
-        assertThat(result.linkUrl()).isEqualTo("https://www.naver.com");
+            // then
+            assertThat(result.id()).isNotNull();
+            assertThat(result.title()).isEqualTo("타이틀");
+            assertThat(result.linkUrl()).isEqualTo("https://www.naver.com");
+        }
     }
 
     @Nested
@@ -61,8 +66,8 @@ class LinkServiceTest {
             var result = linkService.updateLink(savedLink.getId(), titleAfterUpdate, linkUrlAfterUpdate);
 
             // then
-            assertThat(result.title()).isEqualTo("변경 후 타이틀");
-            assertThat(result.linkUrl()).isEqualTo("https://www.google.com");
+            assertThat(result.title()).isEqualTo(titleAfterUpdate);
+            assertThat(result.linkUrl()).isEqualTo(linkUrlAfterUpdate);
         }
 
         @DisplayName("수정하고자 하는 링크가 없을 경우 예외를 발생시킨다.")
