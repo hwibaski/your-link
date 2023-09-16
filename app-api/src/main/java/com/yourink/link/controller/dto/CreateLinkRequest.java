@@ -1,6 +1,7 @@
 package com.yourink.link.controller.dto;
 
 import com.yourink.validator.ValidUrl;
+
 import jakarta.validation.constraints.NotBlank;
 
 public record CreateLinkRequest(

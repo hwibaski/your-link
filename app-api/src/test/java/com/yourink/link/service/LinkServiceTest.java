@@ -1,8 +1,8 @@
 package com.yourink.link.service;
 
-import com.yourink.domain.link.Link;
-import com.yourink.exception.NotFoundException;
-import com.yourink.repository.link.LinkRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -10,8 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import com.yourink.domain.link.Link;
+import com.yourink.exception.NotFoundException;
+import com.yourink.repository.link.LinkRepository;
 
 @SpringBootTest
 class LinkServiceTest {
