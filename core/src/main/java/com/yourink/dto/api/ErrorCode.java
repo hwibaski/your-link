@@ -4,13 +4,14 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorCode {
-    BAD_REQUEST(400, "BAD_REQUEST", "잘못된 요청입니다");
+    BAD_REQUEST(400, "BAD_REQUEST", "잘못된 요청입니다"),
+    NOT_FOUND(404, "NOT_FOUND", "요청한 자원을 찾을 수 없습니다");
 
-    private final int status;
+    final int status;
 
-    private final String code;
+    final String code;
 
-    private final String message;
+    final String message;
 
     ErrorCode(int status, String code, String message) {
         this.status = status;

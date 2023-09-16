@@ -22,4 +22,9 @@ public class Link extends BaseAuditEntity {
     public static Link create(String title, String linkUrl) {
         return new Link(title, linkUrl);
     }
+
+    public void update(String title, String linkUrl) {
+        this.title = title;
+        this.linkUrl = linkUrl;
+    }
 }
