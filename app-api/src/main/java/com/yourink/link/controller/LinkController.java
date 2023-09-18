@@ -15,6 +15,8 @@ import com.yourink.dto.page.CursorPageSearch;
 import com.yourink.dto.page.CursorResult;
 import com.yourink.link.controller.dto.CreateLinkRequest;
 import com.yourink.link.controller.dto.CreateLinkResponse;
+import com.yourink.link.controller.dto.GetLinkRequest;
+import com.yourink.link.controller.dto.GetLinkResponse;
 import com.yourink.link.controller.dto.UpdateLinkRequest;
 import com.yourink.link.controller.dto.UpdateLinkResponse;
 import com.yourink.link.service.LinkService;
@@ -45,12 +47,21 @@ public class LinkController {
                              .body(ApiResponse.success("링크의 수정이 완료되었습니다", new UpdateLinkResponse(result.id(), result.title(), result.linkUrl())));
     }
 
-    @GetMapping("/api/v1/link")
+    @GetMapping("/api/v1/links")
     public ResponseEntity<ApiResponse<CursorResult<LinkResponse>>> getLinks(
             @ModelAttribute CursorPageSearch cursorPageSearch) {
         var result = linkService.getALlLinksByIdDesc(cursorPageSearch.id(), cursorPageSearch.size());
 
         return ResponseEntity.status(HttpStatus.OK)
                              .body(ApiResponse.success("링크 목록 조회가 완료되었습니다.", result));
+    }
+
+    @GetMapping("/api/v1/link")
+    public ResponseEntity<ApiResponse<GetLinkResponse>> getLink(
+            @Valid @RequestBody GetLinkRequest getLinkRequest) {
+        var result = linkService.getLink(getLinkRequest.id());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(ApiResponse.success("링크 조회가 완료되었습니다.", new GetLinkResponse(result.id(), result.title(), result.linkUrl())));
     }
 }
