@@ -94,7 +94,6 @@ class LinkServiceTest {
     @Nested
     @DisplayName("링크 조회 테스트")
     class GetLinkTest {
-        // TODO : 테스트 코드 확인 및 다듬기
         @DisplayName("다수의 링크를 페이지네이션을 통해 조회한다.")
         @Test
         void get_links_by_id() {

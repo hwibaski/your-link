@@ -401,7 +401,6 @@ class LinkControllerTest {
         @Test
         @DisplayName("링크의 목록을 조회한다.")
         void getLinks_success() throws Exception {
-            // TODO : 테스트 코드 작성
             // given
             List<LinkResponse> collect = LongStream.rangeClosed(1, 10)
                                                    .mapToObj(id -> new LinkResponse(id, "타이틀-" + id, "https://www.naver.com/" + id))
