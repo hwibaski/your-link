@@ -45,7 +45,7 @@ public class LinkController {
                              .body(ApiResponse.success("링크의 수정이 완료되었습니다", new UpdateLinkResponse(result.id(), result.title(), result.linkUrl())));
     }
 
-    @GetMapping("/api/v1/link")
+    @GetMapping("/api/v1/links")
     public ResponseEntity<ApiResponse<CursorResult<LinkResponse>>> getLinks(
             @ModelAttribute CursorPageSearch cursorPageSearch) {
         var result = linkService.getALlLinksByIdDesc(cursorPageSearch.id(), cursorPageSearch.size());

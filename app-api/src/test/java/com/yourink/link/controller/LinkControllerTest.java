@@ -396,7 +396,7 @@ class LinkControllerTest {
     @Nested
     @DisplayName("링크 목록 조회 테스트")
     class GetLinksTest {
-        private final String testApiPath = "/api/v1/link";
+        private final String testApiPath = "/api/v1/links";
 
         @Test
         @DisplayName("링크의 목록을 조회한다.")
