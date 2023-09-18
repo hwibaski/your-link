@@ -32,6 +32,7 @@ import com.yourink.dto.link.LinkResponse;
 import com.yourink.dto.page.CursorResult;
 import com.yourink.exception.NotFoundException;
 import com.yourink.link.controller.dto.CreateLinkRequest;
+import com.yourink.link.controller.dto.GetLinkRequest;
 import com.yourink.link.controller.dto.UpdateLinkRequest;
 import com.yourink.link.service.LinkService;
 
@@ -456,6 +457,80 @@ class LinkControllerTest {
                    .andExpect(jsonPath("$.message").value("링크 목록 조회가 완료되었습니다."))
                    .andExpect(jsonPath("$.data.data.length()").value(0))
                    .andExpect(jsonPath("$.data.hasNext").value(false));
+        }
+    }
+
+    @Nested
+    @DisplayName("단일 링크 조회 테스트")
+    class GetLinkTest {
+        private final String testApiPath = "/api/v1/link";
+
+        @Test
+        @DisplayName("링크를 조회한다.")
+        void getLink_success() throws Exception {
+            // given
+            Long linkIdToGet = 1L;
+
+            var requestDto = new GetLinkRequest(linkIdToGet);
+            var requestBody = objectMapper.writeValueAsString(requestDto);
+
+            given(linkService.getLink(any())).willReturn(new LinkResponse(1L, "타이틀", "https://www.naver.com/"));
+
+            // when
+            // then
+            mockMvc.perform(get(testApiPath)
+                           .contentType(APPLICATION_JSON)
+                           .content(requestBody))
+                   .andExpect(status().isOk())
+                   .andExpect(jsonPath("$.success").value(true))
+                   .andExpect(jsonPath("$.code").value("OK"))
+                   .andExpect(jsonPath("$.message").value("링크 조회가 완료되었습니다."))
+                   .andExpect(jsonPath("$.data.id").value(1L));
+        }
+
+        @Test
+        @DisplayName("해당하는 id의 링크가 없을 시 예외를 반환한다.")
+        void getLink_when_link_not_found() throws Exception {
+            // given
+            Long linkIdToGet = 1L;
+
+            var requestDto = new GetLinkRequest(linkIdToGet);
+            var requestBody = objectMapper.writeValueAsString(requestDto);
+
+            given(linkService.getLink(any()))
+                    .willThrow(new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus()));
+
+            // when
+            // then
+            mockMvc.perform(get(testApiPath)
+                           .contentType(APPLICATION_JSON)
+                           .content(requestBody))
+                   .andExpect(status().isNotFound())
+                   .andExpect(jsonPath("$.success").value(false))
+                   .andExpect(jsonPath("$.message").value("요청한 자원을 찾을 수 없습니다"))
+                   .andExpect(jsonPath("$.code").value("NOT_FOUND"))
+                   .andExpect(jsonPath("$.data").isEmpty());
+        }
+
+        @Test
+        @DisplayName("링크의 id가 null이면 400 에러를 반환한다.")
+        void getLink_id_is_null() throws Exception {
+            // given
+            Long linkIdToGet = null;
+
+            var requestDto = new GetLinkRequest(linkIdToGet);
+            var requestBody = objectMapper.writeValueAsString(requestDto);
+
+            // when
+            // then
+            mockMvc.perform(get(testApiPath)
+                           .contentType(APPLICATION_JSON)
+                           .content(requestBody))
+                   .andExpect(status().isBadRequest())
+                   .andExpect(jsonPath("$.success").value(false))
+                   .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
+                   .andExpect(jsonPath("$.code").value("BAD_REQUEST"))
+                   .andExpect(jsonPath("$.validation.id").value("아이디를 확인해주세요"));
         }
     }
 }
