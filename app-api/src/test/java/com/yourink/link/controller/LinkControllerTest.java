@@ -2,11 +2,17 @@ package com.yourink.link.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.LongStream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yourink.dto.api.ErrorCode;
 import com.yourink.dto.link.LinkResponse;
+import com.yourink.dto.page.CursorResult;
 import com.yourink.exception.NotFoundException;
 import com.yourink.link.controller.dto.CreateLinkRequest;
 import com.yourink.link.controller.dto.UpdateLinkRequest;
@@ -51,6 +58,8 @@ class LinkControllerTest {
 
         var requestDto = new CreateLinkRequest(title, linkUrl);
         var requestBody = objectMapper.writeValueAsString(requestDto);
+
+        given(linkService.createLink(any(), any())).willReturn(new LinkResponse(1L, title, linkUrl));
 
         // when
         // then
@@ -381,6 +390,72 @@ class LinkControllerTest {
                    .andExpect(jsonPath("$.validation.id").value("아이디를 확인해주세요"))
                    .andExpect(jsonPath("$.validation.title").value("타이틀을 확인해주세요"))
                    .andExpect(jsonPath("$.validation.linkUrl").value("URL 형식을 확인해주세요"));
+        }
+    }
+
+    @Nested
+    @DisplayName("링크 목록 조회 테스트")
+    class GetLinksTest {
+        private final String testApiPath = "/api/v1/link";
+
+        @Test
+        @DisplayName("링크의 목록을 조회한다.")
+        void getLinks_success() throws Exception {
+            // given
+            List<LinkResponse> collect = LongStream.rangeClosed(1, 10)
+                                                   .mapToObj(id -> new LinkResponse(id, "타이틀-" + id, "https://www.naver.com/" + id))
+                                                   .toList();
+
+            given(linkService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
+
+            // when
+            // then
+            mockMvc.perform(get(testApiPath)
+                           .param("id", "1")
+                           .param("size", "10"))
+                   .andExpect(status().isOk())
+                   .andExpect(jsonPath("$.success").value(true))
+                   .andExpect(jsonPath("$.code").value("OK"))
+                   .andExpect(jsonPath("$.message").value("링크 목록 조회가 완료되었습니다."))
+                   .andExpect(jsonPath("$.data.data.length()").value(collect.size()))
+                   .andExpect(jsonPath("$.data.hasNext").value(true));
+        }
+
+        @Test
+        @DisplayName("size 파라미터를 보내지 않을 시에는 기본 사이즈 값인 10개 service 메서드의 인자로 넘겨준다.")
+        void getLinks_success_when_id_size_parameter_miss() throws Exception {
+            // given
+            List<LinkResponse> collect = LongStream.rangeClosed(1, 10)
+                                                   .mapToObj(id -> new LinkResponse(id, "타이틀-" + id, "https://www.naver.com/" + id))
+                                                   .toList();
+
+            given(linkService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
+
+            // when
+            // then
+            mockMvc.perform(get(testApiPath)
+                    .param("id", "1")
+            );
+            verify(linkService).getALlLinksByIdDesc(1L, 10);
+        }
+
+        @Test
+        @DisplayName("가지고 있는 링크가 없을 경우 빈 리스트를 리턴한다")
+        void getLinks_success_when_link_size_is_zero() throws Exception {
+            // given
+            given(linkService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(new ArrayList<>(), false));
+
+            // when
+            // then
+            mockMvc.perform(get(testApiPath)
+                           .param("id", "1")
+                           .param("size", "10"))
+                   .andExpect(status().isOk())
+                   .andExpect(jsonPath("$.success").value(true))
+                   .andExpect(jsonPath("$.code").value("OK"))
+                   .andExpect(jsonPath("$.message").value("링크 목록 조회가 완료되었습니다."))
+                   .andExpect(jsonPath("$.data.data.length()").value(0))
+                   .andExpect(jsonPath("$.data.hasNext").value(false));
         }
     }
 }
