@@ -36,10 +36,7 @@ public class LinkService {
 
     @Transactional
     public LinkResponse updateLink(Long id, String title, String linkUrl) {
-        var link = linkRepository.findById(id)
-                                 .orElseThrow(
-                                         () -> new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus())
-                                 );
+        var link = findLinkById(id);
 
         link.update(title, linkUrl);
 
@@ -53,5 +50,19 @@ public class LinkService {
         return new CursorResult<>(links.stream()
                                        .map(link -> new LinkResponse(link.getId(), link.getTitle(), link.getLinkUrl()))
                                        .collect(Collectors.toList()), paginationService.hasNext(links));
+    }
+
+    @Transactional(readOnly = true)
+    public LinkResponse getLink(Long linkId) {
+        var link = findLinkById(linkId);
+
+        return new LinkResponse(link.getId(), link.getTitle(), link.getLinkUrl());
+    }
+
+    private Link findLinkById(Long linkId) {
+        return linkRepository.findById(linkId)
+                             .orElseThrow(
+                                     () -> new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus())
+                             );
     }
 }

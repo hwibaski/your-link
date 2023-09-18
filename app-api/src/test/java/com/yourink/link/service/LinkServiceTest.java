@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.yourink.domain.link.Link;
+import com.yourink.dto.api.ErrorCode;
 import com.yourink.dto.link.LinkResponse;
 import com.yourink.exception.NotFoundException;
 import com.yourink.repository.link.LinkRepository;
@@ -92,8 +93,8 @@ class LinkServiceTest {
     }
 
     @Nested
-    @DisplayName("링크 조회 테스트")
-    class GetLinkTest {
+    @DisplayName("링크 리스트 조회 테스트")
+    class GetLinksTest {
         @DisplayName("다수의 링크를 페이지네이션을 통해 조회한다.")
         @Test
         void get_links_by_id() {
@@ -234,6 +235,41 @@ class LinkServiceTest {
 
             // then
             assertThat(result.hasNext()).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("단일 링크 조회 테스트")
+    class getLinkTest {
+        @DisplayName("단일 링크를 id를 이용해 조회한다.")
+        @Test
+        void get_link_by_id() {
+            // given
+            List<Link> linksToSave = IntStream
+                    .rangeClosed(1, 10)
+                    .mapToObj(index -> new Link("타이틀-" + index, "https://www.naver.com/" + index))
+                    .toList();
+
+            List<Link> links = linkRepository.saveAll(linksToSave);
+
+            // when
+            int linkIdToGet = 5;
+            var result = linkService.getLink(links.get(linkIdToGet).getId());
+
+            // then
+            assertThat(result.id()).isEqualTo(links.get(linkIdToGet).getId());
+        }
+
+        @DisplayName("해당 하는 id의 링크가 없을 경우 예외를 발생시킨다.")
+        @Test
+        void get_link_by_id_not_found() {
+            // given
+            // when
+            // then
+            Long linkIdToGet = 5L;
+            assertThatThrownBy(() -> linkService.getLink(linkIdToGet))
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessage(ErrorCode.NOT_FOUND.getMessage());
         }
     }
 }
