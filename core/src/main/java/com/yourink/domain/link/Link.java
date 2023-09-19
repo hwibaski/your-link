@@ -1,7 +1,6 @@
 package com.yourink.domain.link;
 
 import com.yourink.domain.base.BaseAuditEntity;
-
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,6 +14,7 @@ public class Link extends BaseAuditEntity {
 
     private String linkUrl;
 
+    // TODO: 생성자 private으로 변경
     public Link(String title, String linkUrl) {
         this.title = title;
         this.linkUrl = linkUrl;

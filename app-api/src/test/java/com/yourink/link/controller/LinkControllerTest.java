@@ -1,19 +1,14 @@
 package com.yourink.link.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.LongStream;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yourink.dto.api.ErrorCode;
+import com.yourink.dto.link.LinkResponse;
+import com.yourink.dto.page.CursorResult;
+import com.yourink.exception.NotFoundException;
+import com.yourink.link.controller.dto.CreateLinkRequest;
+import com.yourink.link.controller.dto.GetLinkRequest;
+import com.yourink.link.controller.dto.UpdateLinkRequest;
+import com.yourink.link.service.LinkService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,15 +21,17 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yourink.dto.api.ErrorCode;
-import com.yourink.dto.link.LinkResponse;
-import com.yourink.dto.page.CursorResult;
-import com.yourink.exception.NotFoundException;
-import com.yourink.link.controller.dto.CreateLinkRequest;
-import com.yourink.link.controller.dto.GetLinkRequest;
-import com.yourink.link.controller.dto.UpdateLinkRequest;
-import com.yourink.link.service.LinkService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.LongStream;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -42,6 +39,7 @@ import com.yourink.link.service.LinkService;
 @SpringBootTest
 class LinkControllerTest {
 
+    // TODO: CreateLinkTest 클래스 안으로 위치시키기
     private final String testApiPath = "/api/v1/link";
     @Autowired
     private MockMvc mockMvc;
@@ -50,6 +48,7 @@ class LinkControllerTest {
     @MockBean
     private LinkService linkService;
 
+    // TODO: CreateLinkTest 클래스 안으로 위치시키기
     @Test
     @DisplayName("링크를 생성한다.")
     void createLink_success() throws Exception {
@@ -65,8 +64,8 @@ class LinkControllerTest {
         // when
         // then
         mockMvc.perform(post(testApiPath)
-                       .contentType(APPLICATION_JSON)
-                       .content(requestBody))
+                                .contentType(APPLICATION_JSON)
+                                .content(requestBody))
                .andExpect(status().isCreated())
                .andExpect(jsonPath("$.success").value(true))
                .andExpect(jsonPath("$.message").value("링크가 생성되었습니다."))
@@ -92,8 +91,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(post(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
@@ -114,8 +113,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(post(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
@@ -136,8 +135,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(post(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
@@ -158,8 +157,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(post(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
@@ -180,8 +179,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(post(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
@@ -215,8 +214,8 @@ class LinkControllerTest {
                 // when
                 // then
                 mockMvc.perform(patch(testApiPath)
-                               .contentType(APPLICATION_JSON)
-                               .content(requestBody))
+                                        .contentType(APPLICATION_JSON)
+                                        .content(requestBody))
                        .andExpect(status().isOk())
                        .andExpect(jsonPath("$.success").value(true))
                        .andExpect(jsonPath("$.message").value("링크의 수정이 완료되었습니다"))
@@ -243,8 +242,8 @@ class LinkControllerTest {
                 // when
                 // then
                 mockMvc.perform(patch(testApiPath)
-                               .contentType(APPLICATION_JSON)
-                               .content(requestBody))
+                                        .contentType(APPLICATION_JSON)
+                                        .content(requestBody))
                        .andExpect(status().isNotFound())
                        .andExpect(jsonPath("$.success").value(false))
                        .andExpect(jsonPath("$.message").value("요청한 자원을 찾을 수 없습니다"))
@@ -267,8 +266,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(patch(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
@@ -290,8 +289,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(patch(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
@@ -313,8 +312,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(patch(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
@@ -336,8 +335,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(patch(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
@@ -359,8 +358,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(patch(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
@@ -382,8 +381,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(patch(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
@@ -412,8 +411,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(get(testApiPath)
-                           .param("id", "1")
-                           .param("size", "10"))
+                                    .param("id", "1")
+                                    .param("size", "10"))
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.success").value(true))
                    .andExpect(jsonPath("$.code").value("OK"))
@@ -435,7 +434,7 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(get(testApiPath)
-                    .param("id", "1")
+                                    .param("id", "1")
             );
             verify(linkService).getALlLinksByIdDesc(1L, 10);
         }
@@ -449,8 +448,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(get(testApiPath)
-                           .param("id", "1")
-                           .param("size", "10"))
+                                    .param("id", "1")
+                                    .param("size", "10"))
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.success").value(true))
                    .andExpect(jsonPath("$.code").value("OK"))
@@ -479,8 +478,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(get(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.success").value(true))
                    .andExpect(jsonPath("$.code").value("OK"))
@@ -503,8 +502,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(get(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isNotFound())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("요청한 자원을 찾을 수 없습니다"))
@@ -524,8 +523,8 @@ class LinkControllerTest {
             // when
             // then
             mockMvc.perform(get(testApiPath)
-                           .contentType(APPLICATION_JSON)
-                           .content(requestBody))
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
                    .andExpect(status().isBadRequest())
                    .andExpect(jsonPath("$.success").value(false))
                    .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
