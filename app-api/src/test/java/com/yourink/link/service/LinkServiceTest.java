@@ -1,11 +1,10 @@
 package com.yourink.link.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.util.List;
-import java.util.stream.IntStream;
-
+import com.yourink.domain.link.Link;
+import com.yourink.dto.api.ErrorCode;
+import com.yourink.dto.link.LinkResponse;
+import com.yourink.exception.NotFoundException;
+import com.yourink.repository.link.LinkRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,11 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.yourink.domain.link.Link;
-import com.yourink.dto.api.ErrorCode;
-import com.yourink.dto.link.LinkResponse;
-import com.yourink.exception.NotFoundException;
-import com.yourink.repository.link.LinkRepository;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class LinkServiceTest {
@@ -62,7 +61,7 @@ class LinkServiceTest {
             String titleBeforeUpdate = "변경 전 타이틀";
             String linkUrlBeforeUpdate = "https://www.naver.com";
 
-            var linkToSave = new Link(titleBeforeUpdate, linkUrlBeforeUpdate);
+            var linkToSave = Link.create(titleBeforeUpdate, linkUrlBeforeUpdate);
             var savedLink = linkRepository.save(linkToSave);
 
             // when
@@ -101,17 +100,19 @@ class LinkServiceTest {
             // given
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> new Link("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
                     .toList();
 
             List<Link> links = linkRepository.saveAll(linksToSave);
 
             // when
             int size = 5;
-            var result = linkService.getALlLinksByIdDesc(links.get(5).getId(), size);
+            var result = linkService.getALlLinksByIdDesc(links.get(5)
+                                                              .getId(), size);
 
             // then
-            assertThat(result.data().size()).isEqualTo(size);
+            assertThat(result.data()
+                             .size()).isEqualTo(size);
         }
 
         @DisplayName("링크의 ID를 기준으로 내림차순으로 정렬한다.")
@@ -120,14 +121,15 @@ class LinkServiceTest {
             // given
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> new Link("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
                     .toList();
 
             List<Link> links = linkRepository.saveAll(linksToSave);
 
             // when
             int size = 5;
-            var result = linkService.getALlLinksByIdDesc(links.get(5).getId(), size);
+            var result = linkService.getALlLinksByIdDesc(links.get(5)
+                                                              .getId(), size);
 
             // then
             assertThat(isListInDescendingOrder(result.data())).isTrue();
@@ -136,7 +138,9 @@ class LinkServiceTest {
 
         private boolean isListInDescendingOrder(List<LinkResponse> list) {
             return IntStream.range(0, list.size() - 1)
-                            .allMatch(i -> list.get(i).id() >= list.get(i + 1).id());
+                            .allMatch(i -> list.get(i)
+                                               .id() >= list.get(i + 1)
+                                                            .id());
         }
 
         @DisplayName("ID가 null일 경우에는 최신순으로 파라미터로 받은 사이즈만큼의 링크를 조회한다.")
@@ -145,7 +149,7 @@ class LinkServiceTest {
             // given
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> new Link("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
                     .toList();
 
             List<Link> links = linkRepository.saveAll(linksToSave);
@@ -155,8 +159,12 @@ class LinkServiceTest {
             var result = linkService.getALlLinksByIdDesc(null, size);
 
             // then
-            assertThat(result.data().get(0).id()).isEqualTo(links.get(links.size() - 1).getId());
-            assertThat(result.data().size()).isEqualTo(size);
+            assertThat(result.data()
+                             .get(0)
+                             .id()).isEqualTo(links.get(links.size() - 1)
+                                                   .getId());
+            assertThat(result.data()
+                             .size()).isEqualTo(size);
         }
 
         @DisplayName("(cursorId = null 인 경우) - 조회 후 더 조회할 링크가 있으면 hasNext 필드에 true를 반환한다.")
@@ -165,7 +173,7 @@ class LinkServiceTest {
             // given
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> new Link("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
                     .toList();
 
             linkRepository.saveAll(linksToSave);
@@ -184,16 +192,18 @@ class LinkServiceTest {
             // given
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> new Link("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
                     .toList();
 
             List<Link> links = linkRepository.saveAll(linksToSave);
             links.forEach(link -> System.out.println(link.getId()));
-            System.out.println(links.get(5).getId());
+            System.out.println(links.get(5)
+                                    .getId());
 
             // when
             int size = 5;
-            var result = linkService.getALlLinksByIdDesc(links.get(9).getId(), size);
+            var result = linkService.getALlLinksByIdDesc(links.get(9)
+                                                              .getId(), size);
 
             // then
             assertThat(result.hasNext()).isTrue();
@@ -205,7 +215,7 @@ class LinkServiceTest {
             // given
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 3)
-                    .mapToObj(index -> new Link("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
                     .toList();
 
             linkRepository.saveAll(linksToSave);
@@ -224,7 +234,7 @@ class LinkServiceTest {
             // given
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> new Link("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
                     .toList();
 
             linkRepository.saveAll(linksToSave);
@@ -247,17 +257,19 @@ class LinkServiceTest {
             // given
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> new Link("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
                     .toList();
 
             List<Link> links = linkRepository.saveAll(linksToSave);
 
             // when
             int linkIdToGet = 5;
-            var result = linkService.getLink(links.get(linkIdToGet).getId());
+            var result = linkService.getLink(links.get(linkIdToGet)
+                                                  .getId());
 
             // then
-            assertThat(result.id()).isEqualTo(links.get(linkIdToGet).getId());
+            assertThat(result.id()).isEqualTo(links.get(linkIdToGet)
+                                                   .getId());
         }
 
         @DisplayName("해당 하는 id의 링크가 없을 경우 예외를 발생시킨다.")

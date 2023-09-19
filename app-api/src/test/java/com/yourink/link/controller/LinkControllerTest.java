@@ -39,8 +39,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 class LinkControllerTest {
 
-    // TODO: CreateLinkTest 클래스 안으로 위치시키기
-    private final String testApiPath = "/api/v1/link";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -48,36 +46,37 @@ class LinkControllerTest {
     @MockBean
     private LinkService linkService;
 
-    // TODO: CreateLinkTest 클래스 안으로 위치시키기
-    @Test
-    @DisplayName("링크를 생성한다.")
-    void createLink_success() throws Exception {
-        // given
-        String title = "타이틀";
-        String linkUrl = "http://www.yourlink.com";
-
-        var requestDto = new CreateLinkRequest(title, linkUrl);
-        var requestBody = objectMapper.writeValueAsString(requestDto);
-
-        given(linkService.createLink(any(), any())).willReturn(new LinkResponse(1L, title, linkUrl));
-
-        // when
-        // then
-        mockMvc.perform(post(testApiPath)
-                                .contentType(APPLICATION_JSON)
-                                .content(requestBody))
-               .andExpect(status().isCreated())
-               .andExpect(jsonPath("$.success").value(true))
-               .andExpect(jsonPath("$.message").value("링크가 생성되었습니다."))
-               .andExpect(jsonPath("$.code").value("OK"))
-               .andExpect(jsonPath("$.data.id").isNotEmpty())
-               .andExpect(jsonPath("$.data.title").value(title))
-               .andExpect(jsonPath("$.data.linkUrl").value(linkUrl));
-    }
-
     @Nested
     @DisplayName("링크 생성 테스트")
     class CreateLinkTest {
+        private final String testApiPath = "/api/v1/link";
+
+        @Test
+        @DisplayName("링크를 생성한다.")
+        void createLink_success() throws Exception {
+            // given
+            String title = "타이틀";
+            String linkUrl = "http://www.yourlink.com";
+
+            var requestDto = new CreateLinkRequest(title, linkUrl);
+            var requestBody = objectMapper.writeValueAsString(requestDto);
+
+            given(linkService.createLink(any(), any())).willReturn(new LinkResponse(1L, title, linkUrl));
+
+            // when
+            // then
+            mockMvc.perform(post(testApiPath)
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody))
+                   .andExpect(status().isCreated())
+                   .andExpect(jsonPath("$.success").value(true))
+                   .andExpect(jsonPath("$.message").value("링크가 생성되었습니다."))
+                   .andExpect(jsonPath("$.code").value("OK"))
+                   .andExpect(jsonPath("$.data.id").isNotEmpty())
+                   .andExpect(jsonPath("$.data.title").value(title))
+                   .andExpect(jsonPath("$.data.linkUrl").value(linkUrl));
+        }
+
         @Test
         @DisplayName("링크의 제목(title)이 빈문자열이면 400 에러를 반환한다.")
         void createLink_title_is_blank() throws Exception {
