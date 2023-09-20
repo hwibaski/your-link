@@ -1,6 +1,7 @@
 package com.yourink.link.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yourink.domain.link.Link;
 import com.yourink.dto.api.ErrorCode;
 import com.yourink.dto.link.LinkResponse;
 import com.yourink.dto.page.CursorResult;
@@ -8,7 +9,8 @@ import com.yourink.exception.NotFoundException;
 import com.yourink.link.controller.dto.CreateLinkRequest;
 import com.yourink.link.controller.dto.GetLinkRequest;
 import com.yourink.link.controller.dto.UpdateLinkRequest;
-import com.yourink.link.service.LinkService;
+import com.yourink.link.service.LinkReadService;
+import com.yourink.link.service.LinkWriteService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,7 @@ import java.util.stream.LongStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -44,7 +47,9 @@ class LinkControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
-    private LinkService linkService;
+    private LinkWriteService linkWriteService;
+    @MockBean
+    private LinkReadService linkReadService;
 
     @Nested
     @DisplayName("링크 생성 테스트")
@@ -62,7 +67,9 @@ class LinkControllerTest {
             var requestDto = new CreateLinkRequest(title, linkUrl, tags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
-            given(linkService.createLink(any(), any(), any())).willReturn(new LinkResponse(1L, title, linkUrl));
+            Link mockLink = mock(Link.class);
+            given(mockLink.getId()).willReturn(1L);
+            given(linkWriteService.createLink(any(), any(), any())).willReturn(mockLink);
 
             // when
             // then
@@ -73,9 +80,7 @@ class LinkControllerTest {
                    .andExpect(jsonPath("$.success").value(true))
                    .andExpect(jsonPath("$.message").value("링크가 생성되었습니다."))
                    .andExpect(jsonPath("$.code").value("OK"))
-                   .andExpect(jsonPath("$.data.id").isNotEmpty())
-                   .andExpect(jsonPath("$.data.title").value(title))
-                   .andExpect(jsonPath("$.data.linkUrl").value(linkUrl));
+                   .andExpect(jsonPath("$.data.id").isNotEmpty());
         }
 
         @Test
@@ -203,17 +208,15 @@ class LinkControllerTest {
             @DisplayName("링크를 수정한다.")
             void updateLink_success() throws Exception {
                 // given
-                String titleAfterUpdate = "변경 후 타이틀";
-                String linkUrlAfterUpdate = "http://www.linkAfterUpdate.com";
-
-                var linkAfterUpdate = new LinkResponse(1L, titleAfterUpdate, linkUrlAfterUpdate);
-                given(linkService.updateLink(any(), any(), any())).willReturn(linkAfterUpdate);
+                Link mockLink = mock(Link.class);
+                given(mockLink.getId()).willReturn(1L);
+                given(linkWriteService.updateLink(any(), any(), any())).willReturn(mockLink);
 
                 Long id = 1L;
-                String titleBeforeUpdate = "변경 전 타이틀";
-                String linkUrlBeforeUpdate = "http://www.linkBeforeUpdate.com";
+                String titleAfterUpdate = "변경 후 타이틀";
+                String linkUrlAfterUpdate = "http://www.linkToUpdate.com";
 
-                var requestDto = new UpdateLinkRequest(id, titleBeforeUpdate, linkUrlBeforeUpdate);
+                var requestDto = new UpdateLinkRequest(id, titleAfterUpdate, linkUrlAfterUpdate);
                 var requestBody = objectMapper.writeValueAsString(requestDto);
 
                 // when
@@ -225,9 +228,7 @@ class LinkControllerTest {
                        .andExpect(jsonPath("$.success").value(true))
                        .andExpect(jsonPath("$.message").value("링크의 수정이 완료되었습니다"))
                        .andExpect(jsonPath("$.code").value("OK"))
-                       .andExpect(jsonPath("$.data.id").isNotEmpty())
-                       .andExpect(jsonPath("$.data.title").value(titleAfterUpdate))
-                       .andExpect(jsonPath("$.data.linkUrl").value(linkUrlAfterUpdate));
+                       .andExpect(jsonPath("$.data.id").isNotEmpty());
             }
 
             @Test
@@ -235,13 +236,13 @@ class LinkControllerTest {
             void updateLink_not_found_link() throws Exception {
                 // given
                 Long id = 1L;
-                String titleBeforeUpdate = "변경 전 타이틀";
-                String linkUrlBeforeUpdate = "http://www.linkBeforeUpdate.com";
+                String titleToUpdate = "변경 요청 타이틀";
+                String linkUrlToUpdate = "http://www.linkToUpdate.com";
 
-                var requestDto = new UpdateLinkRequest(id, titleBeforeUpdate, linkUrlBeforeUpdate);
+                var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
                 var requestBody = objectMapper.writeValueAsString(requestDto);
 
-                given(linkService.updateLink(any(), any(), any()))
+                given(linkWriteService.updateLink(any(), any(), any()))
                         .willThrow(new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus()));
 
                 // when
@@ -262,10 +263,10 @@ class LinkControllerTest {
         void updateLink_id_is_null() throws Exception {
             // given
             Long id = null;
-            String titleBeforeUpdate = "변경 전 타이틀";
-            String linkUrlBeforeUpdate = "http://www.linkBeforeUpdate.com";
+            String titleToUpdate = "변경 요청 타이틀";
+            String linkUrlToUpdate = "http://www.linkToUpdate.com";
 
-            var requestDto = new UpdateLinkRequest(id, titleBeforeUpdate, linkUrlBeforeUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -285,10 +286,10 @@ class LinkControllerTest {
         void updateLink_title_is_blank() throws Exception {
             // given
             Long id = 1L;
-            String titleBeforeUpdate = "";
-            String linkUrlBeforeUpdate = "http://www.linkBeforeUpdate.com";
+            String titleToUpdate = "";
+            String linkUrlToUpdate = "http://www.linkBeforeUpdate.com";
 
-            var requestDto = new UpdateLinkRequest(id, titleBeforeUpdate, linkUrlBeforeUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -308,10 +309,10 @@ class LinkControllerTest {
         void updateLink_title_is_null() throws Exception {
             // given
             Long id = 1L;
-            String titleBeforeUpdate = null;
-            String linkUrlBeforeUpdate = "http://www.linkBeforeUpdate.com";
+            String titleToUpdate = null;
+            String linkUrlToUpdate = "http://www.linkBeforeUpdate.com";
 
-            var requestDto = new UpdateLinkRequest(id, titleBeforeUpdate, linkUrlBeforeUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -331,10 +332,10 @@ class LinkControllerTest {
         void updateLink_linkUrl_is_not_url() throws Exception {
             // given
             Long id = 1L;
-            String titleBeforeUpdate = "변경 전 타이틀";
-            String linkUrlBeforeUpdate = "I am not URL";
+            String titleToUpdate = "변경 전 타이틀";
+            String linkUrlToUpdate = "I am not URL";
 
-            var requestDto = new UpdateLinkRequest(id, titleBeforeUpdate, linkUrlBeforeUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -354,10 +355,10 @@ class LinkControllerTest {
         void updateLink_linkUrl_is_null() throws Exception {
             // given
             Long id = 1L;
-            String titleBeforeUpdate = "변경 전 타이틀";
-            String linkUrlBeforeUpdate = null;
+            String titleToUpdate = "변경 전 타이틀";
+            String linkUrlToUpdate = null;
 
-            var requestDto = new UpdateLinkRequest(id, titleBeforeUpdate, linkUrlBeforeUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -377,10 +378,10 @@ class LinkControllerTest {
         void updateLink_id_title_linkUrl_is_not_valid() throws Exception {
             // given
             Long id = null;
-            String titleBeforeUpdate = null;
-            String linkUrlBeforeUpdate = null;
+            String titleToUpdate = null;
+            String linkUrlToUpdate = null;
 
-            var requestDto = new UpdateLinkRequest(id, titleBeforeUpdate, linkUrlBeforeUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -411,7 +412,7 @@ class LinkControllerTest {
                                                    .mapToObj(id -> new LinkResponse(id, "타이틀-" + id, "https://www.naver.com/" + id))
                                                    .toList();
 
-            given(linkService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
+            given(linkReadService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
 
             // when
             // then
@@ -434,21 +435,21 @@ class LinkControllerTest {
                                                    .mapToObj(id -> new LinkResponse(id, "타이틀-" + id, "https://www.naver.com/" + id))
                                                    .toList();
 
-            given(linkService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
+            given(linkReadService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
 
             // when
             // then
             mockMvc.perform(get(testApiPath)
                                     .param("id", "1")
             );
-            verify(linkService).getALlLinksByIdDesc(1L, 10);
+            verify(linkReadService).getALlLinksByIdDesc(1L, 10);
         }
 
         @Test
         @DisplayName("가지고 있는 링크가 없을 경우 빈 리스트를 리턴한다")
         void getLinks_success_when_link_size_is_zero() throws Exception {
             // given
-            given(linkService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(new ArrayList<>(), false));
+            given(linkReadService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(new ArrayList<>(), false));
 
             // when
             // then
@@ -478,7 +479,7 @@ class LinkControllerTest {
             var requestDto = new GetLinkRequest(linkIdToGet);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
-            given(linkService.getLink(any())).willReturn(new LinkResponse(1L, "타이틀", "https://www.naver.com/"));
+            given(linkReadService.getLink(any())).willReturn(new LinkResponse(1L, "타이틀", "https://www.naver.com/"));
 
             // when
             // then
@@ -501,7 +502,7 @@ class LinkControllerTest {
             var requestDto = new GetLinkRequest(linkIdToGet);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
-            given(linkService.getLink(any()))
+            given(linkReadService.getLink(any()))
                     .willThrow(new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus()));
 
             // when

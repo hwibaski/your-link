@@ -19,11 +19,12 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+
 @ActiveProfiles("test")
 @SpringBootTest
-class LinkServiceTest {
+class LinkReadServiceTest {
     @Autowired
-    private LinkService linkService;
+    private LinkReadService linkReadService;
 
     @Autowired
     private LinkRepository linkRepository;
@@ -31,67 +32,6 @@ class LinkServiceTest {
     @AfterEach
     void tearDown() {
         linkRepository.deleteAllInBatch();
-    }
-
-    @Nested
-    @DisplayName("링크 생성 테스트")
-    class CreateLinkTest {
-        @DisplayName("링크를 생성한다.")
-        @Test
-        void create_link() {
-            // given
-            String title = "타이틀";
-            String linkUrl = "https://www.naver.com";
-            List<String> tags = List.of("태그1", "태그2");
-
-            // when
-            var result = linkService.createLink(title, linkUrl, tags);
-
-            // then
-            assertThat(result.id()).isNotNull();
-            assertThat(result.title()).isEqualTo("타이틀");
-            assertThat(result.linkUrl()).isEqualTo("https://www.naver.com");
-        }
-    }
-
-    @Nested
-    @DisplayName("링크 수정 테스트")
-    class UpdateLinkTest {
-        @DisplayName("링크를 수정한다.")
-        @Test
-        void update_link_success() {
-            // given
-            String titleBeforeUpdate = "변경 전 타이틀";
-            String linkUrlBeforeUpdate = "https://www.naver.com";
-
-            var linkToSave = Link.create(titleBeforeUpdate, linkUrlBeforeUpdate);
-            var savedLink = linkRepository.save(linkToSave);
-
-            // when
-            String titleAfterUpdate = "변경 후 타이틀";
-            String linkUrlAfterUpdate = "https://www.google.com";
-            var result = linkService.updateLink(savedLink.getId(), titleAfterUpdate, linkUrlAfterUpdate);
-
-            // then
-            assertThat(result.title()).isEqualTo(titleAfterUpdate);
-            assertThat(result.linkUrl()).isEqualTo(linkUrlAfterUpdate);
-        }
-
-        @DisplayName("수정하고자 하는 링크가 없을 경우 예외를 발생시킨다.")
-        @Test
-        void update_link_when_not_found() {
-            // given
-            // when
-
-            // then
-            Long id = 1L;
-            String titleAfterUpdate = "변경 후 타이틀";
-            String linkUrlAfterUpdate = "https://www.google.com";
-
-            assertThatThrownBy(() -> linkService.updateLink(id, titleAfterUpdate, linkUrlAfterUpdate))
-                    .isInstanceOf(NotFoundException.class)
-                    .hasMessage("요청한 자원을 찾을 수 없습니다");
-        }
     }
 
     @Nested
@@ -110,8 +50,8 @@ class LinkServiceTest {
 
             // when
             int size = 5;
-            var result = linkService.getALlLinksByIdDesc(links.get(5)
-                                                              .getId(), size);
+            var result = linkReadService.getALlLinksByIdDesc(links.get(5)
+                                                                  .getId(), size);
 
             // then
             assertThat(result.data()
@@ -131,8 +71,8 @@ class LinkServiceTest {
 
             // when
             int size = 5;
-            var result = linkService.getALlLinksByIdDesc(links.get(5)
-                                                              .getId(), size);
+            var result = linkReadService.getALlLinksByIdDesc(links.get(5)
+                                                                  .getId(), size);
 
             // then
             assertThat(isListInDescendingOrder(result.data())).isTrue();
@@ -159,7 +99,7 @@ class LinkServiceTest {
 
             // when
             int size = 5;
-            var result = linkService.getALlLinksByIdDesc(null, size);
+            var result = linkReadService.getALlLinksByIdDesc(null, size);
 
             // then
             assertThat(result.data()
@@ -183,7 +123,7 @@ class LinkServiceTest {
 
             // when
             int size = 5;
-            var result = linkService.getALlLinksByIdDesc(null, size);
+            var result = linkReadService.getALlLinksByIdDesc(null, size);
 
             // then
             assertThat(result.hasNext()).isTrue();
@@ -205,8 +145,8 @@ class LinkServiceTest {
 
             // when
             int size = 5;
-            var result = linkService.getALlLinksByIdDesc(links.get(9)
-                                                              .getId(), size);
+            var result = linkReadService.getALlLinksByIdDesc(links.get(9)
+                                                                  .getId(), size);
 
             // then
             assertThat(result.hasNext()).isTrue();
@@ -225,7 +165,7 @@ class LinkServiceTest {
 
             // when
             int size = 5;
-            var result = linkService.getALlLinksByIdDesc(null, size);
+            var result = linkReadService.getALlLinksByIdDesc(null, size);
 
             // then
             assertThat(result.hasNext()).isFalse();
@@ -244,7 +184,7 @@ class LinkServiceTest {
 
             // when
             int size = 5;
-            var result = linkService.getALlLinksByIdDesc(1L, size);
+            var result = linkReadService.getALlLinksByIdDesc(1L, size);
 
             // then
             assertThat(result.hasNext()).isFalse();
@@ -267,8 +207,8 @@ class LinkServiceTest {
 
             // when
             int linkIdToGet = 5;
-            var result = linkService.getLink(links.get(linkIdToGet)
-                                                  .getId());
+            var result = linkReadService.getLink(links.get(linkIdToGet)
+                                                      .getId());
 
             // then
             assertThat(result.id()).isEqualTo(links.get(linkIdToGet)
@@ -282,7 +222,7 @@ class LinkServiceTest {
             // when
             // then
             Long linkIdToGet = 5L;
-            assertThatThrownBy(() -> linkService.getLink(linkIdToGet))
+            assertThatThrownBy(() -> linkReadService.getLink(linkIdToGet))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage(ErrorCode.NOT_FOUND.getMessage());
         }
