@@ -1,4 +1,6 @@
 package com.yourink.link.controller.dto;
 
-public record GetLinkResponse(Long id, String title, String linkUrl) {
+import java.util.List;
+
+public record GetLinkResponse(Long id, String title, String linkUrl, List<String> tags) {
 }
