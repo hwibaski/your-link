@@ -57,11 +57,12 @@ class LinkControllerTest {
             // given
             String title = "타이틀";
             String linkUrl = "http://www.yourlink.com";
+            List<String> tags = List.of("tag1", "tag2");
 
-            var requestDto = new CreateLinkRequest(title, linkUrl);
+            var requestDto = new CreateLinkRequest(title, linkUrl, tags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
-            given(linkService.createLink(any(), any())).willReturn(new LinkResponse(1L, title, linkUrl));
+            given(linkService.createLink(any(), any(), any())).willReturn(new LinkResponse(1L, title, linkUrl));
 
             // when
             // then
@@ -83,8 +84,9 @@ class LinkControllerTest {
             // given
             String title = "";
             String linkUrl = "http://www.yourlink.com";
+            List<String> tags = List.of("tag1", "tag2");
 
-            var requestDto = new CreateLinkRequest(title, linkUrl);
+            var requestDto = new CreateLinkRequest(title, linkUrl, tags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -105,8 +107,9 @@ class LinkControllerTest {
             // given
             String title = null;
             String linkUrl = "http://www.yourlink.com";
+            List<String> tags = List.of("tag1", "tag2");
 
-            var requestDto = new CreateLinkRequest(title, linkUrl);
+            var requestDto = new CreateLinkRequest(title, linkUrl, tags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -127,8 +130,9 @@ class LinkControllerTest {
             // given
             String title = "타이틀";
             String linkUrl = "url 형식이 아닌 문자열";
+            List<String> tags = List.of("tag1", "tag2");
 
-            var requestDto = new CreateLinkRequest(title, linkUrl);
+            var requestDto = new CreateLinkRequest(title, linkUrl, tags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -149,8 +153,9 @@ class LinkControllerTest {
             // given
             String title = "타이틀";
             String linkUrl = null;
+            List<String> tags = List.of("tag1", "tag2");
 
-            var requestDto = new CreateLinkRequest(title, linkUrl);
+            var requestDto = new CreateLinkRequest(title, linkUrl, tags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -171,8 +176,9 @@ class LinkControllerTest {
             // given
             String title = "";
             String linkUrl = null;
+            List<String> tags = List.of("tag1", "tag2");
 
-            var requestDto = new CreateLinkRequest(title, linkUrl);
+            var requestDto = new CreateLinkRequest(title, linkUrl, tags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
