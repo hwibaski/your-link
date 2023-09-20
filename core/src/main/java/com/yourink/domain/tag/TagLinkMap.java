@@ -27,6 +27,9 @@ public class TagLinkMap extends BaseAuditEntity {
     }
 
     public static TagLinkMap create(Link link, Tag tag) {
-        return new TagLinkMap(link, tag);
+        var tagLinkMap = new TagLinkMap(link, tag);
+        link.addTagLinkMap(tagLinkMap);
+        
+        return tagLinkMap;
     }
 }
