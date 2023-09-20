@@ -17,6 +17,7 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
+        default_batch_fetch_size: 100
         dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: true
@@ -40,6 +41,7 @@ spring:
       ddl-auto: create-drop
     properties:
       hibernate:
+        default_batch_fetch_size: 100
         dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: false

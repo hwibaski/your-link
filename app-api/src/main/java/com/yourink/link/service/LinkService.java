@@ -1,10 +1,5 @@
 package com.yourink.link.service;
 
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.yourink.domain.link.Link;
 import com.yourink.dto.api.ErrorCode;
 import com.yourink.dto.link.LinkResponse;
@@ -13,23 +8,32 @@ import com.yourink.exception.NotFoundException;
 import com.yourink.repository.link.LinkQueryDslRepository;
 import com.yourink.repository.link.LinkRepository;
 import com.yourink.service.PaginationService;
+import com.yourink.tag.service.TagLinkMapService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LinkService {
     private final LinkRepository linkRepository;
     private final LinkQueryDslRepository linkQueryDslRepository;
     private final PaginationService paginationService;
+    private final TagLinkMapService tagLinkMapService;
 
     public LinkService(LinkRepository linkRepository,
-                       LinkQueryDslRepository linkQueryDslRepository) {
+            LinkQueryDslRepository linkQueryDslRepository, TagLinkMapService tagLinkMapService) {
         this.linkRepository = linkRepository;
         this.linkQueryDslRepository = linkQueryDslRepository;
         this.paginationService = new PaginationService(linkRepository);
+        this.tagLinkMapService = tagLinkMapService;
     }
 
     @Transactional
-    public LinkResponse createLink(String title, String linkUrl) {
+    public LinkResponse createLink(String title, String linkUrl, List<String> tags) {
         var savedLink = linkRepository.save(Link.create(title, linkUrl));
+        tagLinkMapService.createTagLinkMap(savedLink, tags);
 
         return new LinkResponse(savedLink.getId(), savedLink.getTitle(), savedLink.getLinkUrl());
     }

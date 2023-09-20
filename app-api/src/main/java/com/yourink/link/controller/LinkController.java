@@ -1,28 +1,16 @@
 package com.yourink.link.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.yourink.dto.api.ApiResponse;
 import com.yourink.dto.link.LinkResponse;
 import com.yourink.dto.page.CursorPageSearch;
 import com.yourink.dto.page.CursorResult;
-import com.yourink.link.controller.dto.CreateLinkRequest;
-import com.yourink.link.controller.dto.CreateLinkResponse;
-import com.yourink.link.controller.dto.GetLinkRequest;
-import com.yourink.link.controller.dto.GetLinkResponse;
-import com.yourink.link.controller.dto.UpdateLinkRequest;
-import com.yourink.link.controller.dto.UpdateLinkResponse;
+import com.yourink.link.controller.dto.*;
 import com.yourink.link.service.LinkService;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,7 +20,7 @@ public class LinkController {
     @PostMapping("/api/v1/link")
     public ResponseEntity<ApiResponse<CreateLinkResponse>> createLink(
             @Valid @RequestBody CreateLinkRequest createLinkRequest) {
-        var result = linkService.createLink(createLinkRequest.title(), createLinkRequest.linkUrl());
+        var result = linkService.createLink(createLinkRequest.title(), createLinkRequest.linkUrl(), createLinkRequest.tags());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(ApiResponse.success("링크가 생성되었습니다.", new CreateLinkResponse(result.id(), result.title(), result.linkUrl())));
