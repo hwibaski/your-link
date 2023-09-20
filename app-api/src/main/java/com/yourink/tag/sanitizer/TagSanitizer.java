@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-// TODO: 테스트 코드 작성
 @Component
 public class TagSanitizer {
     public List<String> trimAndToLowerCase(List<String> tags) {
