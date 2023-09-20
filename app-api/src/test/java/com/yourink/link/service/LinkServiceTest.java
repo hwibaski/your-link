@@ -42,9 +42,10 @@ class LinkServiceTest {
             // given
             String title = "타이틀";
             String linkUrl = "https://www.naver.com";
+            List<String> tags = List.of("태그1", "태그2");
 
             // when
-            var result = linkService.createLink(title, linkUrl);
+            var result = linkService.createLink(title, linkUrl, tags);
 
             // then
             assertThat(result.id()).isNotNull();
