@@ -1,10 +1,14 @@
 package com.yourink.link.service;
 
 import com.yourink.domain.link.Link;
+import com.yourink.domain.tag.Tag;
+import com.yourink.domain.tag.TagLinkMap;
 import com.yourink.dto.api.ErrorCode;
-import com.yourink.dto.link.LinkResponse;
 import com.yourink.exception.NotFoundException;
+import com.yourink.link.controller.dto.GetLinkListResponse;
 import com.yourink.repository.link.LinkRepository;
+import com.yourink.repository.tag.TagLinkMapRepository;
+import com.yourink.repository.tag.TagRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -29,9 +33,17 @@ class LinkReadServiceTest {
     @Autowired
     private LinkRepository linkRepository;
 
+    @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
+    private TagLinkMapRepository tagLinkMapRepository;
+
     @AfterEach
     void tearDown() {
+        tagLinkMapRepository.deleteAllInBatch();
         linkRepository.deleteAllInBatch();
+        tagRepository.deleteAllInBatch();
     }
 
     @Nested
@@ -79,7 +91,7 @@ class LinkReadServiceTest {
         }
 
 
-        private boolean isListInDescendingOrder(List<LinkResponse> list) {
+        private boolean isListInDescendingOrder(List<GetLinkListResponse> list) {
             return IntStream.range(0, list.size() - 1)
                             .allMatch(i -> list.get(i)
                                                .id() >= list.get(i + 1)
@@ -194,25 +206,38 @@ class LinkReadServiceTest {
     @Nested
     @DisplayName("단일 링크 조회 테스트")
     class getLinkTest {
-        @DisplayName("단일 링크를 id를 이용해 조회한다.")
+        @DisplayName("단일 링크를 id를 이용해 조회한다. 태그를 가지고 있지 않아도 조회가 가능하다.")
         @Test
-        void get_link_by_id() {
+        void get_link_by_id_without_tag() {
             // given
-            List<Link> linksToSave = IntStream
-                    .rangeClosed(1, 10)
-                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
-                    .toList();
 
-            List<Link> links = linkRepository.saveAll(linksToSave);
+            var linkToSave = Link.create("타이틀-1", "https://www.naver.com/1");
+
+            Link savedLink = linkRepository.save(linkToSave);
 
             // when
-            int linkIdToGet = 5;
-            var result = linkReadService.getLink(links.get(linkIdToGet)
-                                                      .getId());
+            var result = linkReadService.getLink(savedLink.getId());
 
             // then
-            assertThat(result.id()).isEqualTo(links.get(linkIdToGet)
-                                                   .getId());
+            assertThat(result.id()).isEqualTo(savedLink.getId());
+        }
+
+        @DisplayName("단일 링크를 id를 이용해 조회한다. 해당 링크가 가지고 있는 태그가 있다면 같이 반환한다.")
+        @Test
+        void get_link_by_id_with_tag() {
+            // given
+            var linkToSave = Link.create("타이틀-1", "https://www.naver.com/1");
+            var tagToSave = Tag.create("태그1");
+            var savedTag = tagRepository.save(tagToSave);
+            var savedLink = linkRepository.save(linkToSave);
+            tagLinkMapRepository.save(TagLinkMap.create(savedLink, savedTag));
+
+            // when
+            var result = linkReadService.getLink(savedLink.getId());
+
+            // then
+            assertThat(result.id()).isEqualTo(savedLink.getId());
+            assertThat(result.tags()).containsExactly("태그1");
         }
 
         @DisplayName("해당 하는 id의 링크가 없을 경우 예외를 발생시킨다.")

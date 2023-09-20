@@ -3,12 +3,9 @@ package com.yourink.link.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yourink.domain.link.Link;
 import com.yourink.dto.api.ErrorCode;
-import com.yourink.dto.link.LinkResponse;
 import com.yourink.dto.page.CursorResult;
 import com.yourink.exception.NotFoundException;
-import com.yourink.link.controller.dto.CreateLinkRequest;
-import com.yourink.link.controller.dto.GetLinkRequest;
-import com.yourink.link.controller.dto.UpdateLinkRequest;
+import com.yourink.link.controller.dto.*;
 import com.yourink.link.service.LinkReadService;
 import com.yourink.link.service.LinkWriteService;
 import org.junit.jupiter.api.DisplayName;
@@ -408,9 +405,9 @@ class LinkControllerTest {
         @DisplayName("링크의 목록을 조회한다.")
         void getLinks_success() throws Exception {
             // given
-            List<LinkResponse> collect = LongStream.rangeClosed(1, 10)
-                                                   .mapToObj(id -> new LinkResponse(id, "타이틀-" + id, "https://www.naver.com/" + id))
-                                                   .toList();
+            List<GetLinkListResponse> collect = LongStream.rangeClosed(1, 10)
+                                                          .mapToObj(id -> new GetLinkListResponse(id, "타이틀-" + id, "https://www.naver.com/" + id, List.of("tag" + id)))
+                                                          .toList();
 
             given(linkReadService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
 
@@ -431,9 +428,9 @@ class LinkControllerTest {
         @DisplayName("size 파라미터를 보내지 않을 시에는 기본 사이즈 값인 10개 service 메서드의 인자로 넘겨준다.")
         void getLinks_success_when_id_size_parameter_miss() throws Exception {
             // given
-            List<LinkResponse> collect = LongStream.rangeClosed(1, 10)
-                                                   .mapToObj(id -> new LinkResponse(id, "타이틀-" + id, "https://www.naver.com/" + id))
-                                                   .toList();
+            List<GetLinkListResponse> collect = LongStream.rangeClosed(1, 10)
+                                                          .mapToObj(id -> new GetLinkListResponse(id, "타이틀-" + id, "https://www.naver.com/" + id, List.of("tag" + id)))
+                                                          .toList();
 
             given(linkReadService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
 
@@ -479,7 +476,7 @@ class LinkControllerTest {
             var requestDto = new GetLinkRequest(linkIdToGet);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
-            given(linkReadService.getLink(any())).willReturn(new LinkResponse(1L, "타이틀", "https://www.naver.com/"));
+            given(linkReadService.getLink(any())).willReturn(new GetLinkResponse(1L, "타이틀", "https://www.naver.com", List.of("tag1", "tag2")));
 
             // when
             // then

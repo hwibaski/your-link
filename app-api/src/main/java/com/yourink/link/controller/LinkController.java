@@ -1,7 +1,6 @@
 package com.yourink.link.controller;
 
 import com.yourink.dto.api.ApiResponse;
-import com.yourink.dto.link.LinkResponse;
 import com.yourink.dto.page.CursorPageSearch;
 import com.yourink.dto.page.CursorResult;
 import com.yourink.link.controller.dto.*;
@@ -38,7 +37,7 @@ public class LinkController {
     }
 
     @GetMapping("/api/v1/links")
-    public ResponseEntity<ApiResponse<CursorResult<LinkResponse>>> getLinks(
+    public ResponseEntity<ApiResponse<CursorResult<GetLinkListResponse>>> getLinks(
             @ModelAttribute CursorPageSearch cursorPageSearch) {
         var result = linkReadService.getALlLinksByIdDesc(cursorPageSearch.id(), cursorPageSearch.size());
 
@@ -52,6 +51,6 @@ public class LinkController {
         var result = linkReadService.getLink(getLinkRequest.id());
 
         return ResponseEntity.status(HttpStatus.OK)
-                             .body(ApiResponse.success("링크 조회가 완료되었습니다.", new GetLinkResponse(result.id(), result.title(), result.linkUrl())));
+                             .body(ApiResponse.success("링크 조회가 완료되었습니다.", result));
     }
 }
