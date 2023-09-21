@@ -3,7 +3,7 @@ package com.yourink.member.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yourink.dto.member.MemberResponse;
 import com.yourink.member.controller.dto.CreateMemberRequest;
-import com.yourink.member.service.MemberService;
+import com.yourink.member.service.MemberWriteService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class MemberControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
-    private MemberService memberService;
+    private MemberWriteService memberWriteService;
 
     @Nested
     @DisplayName("멤버 생성 테스트")
@@ -50,7 +50,7 @@ class MemberControllerTest {
             var requestDto = new CreateMemberRequest(email);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
-            given(memberService.createMember(any())).willReturn(new MemberResponse(1L, email));
+            given(memberWriteService.createMember(any())).willReturn(new MemberResponse(1L, email));
 
             // when
             // then
