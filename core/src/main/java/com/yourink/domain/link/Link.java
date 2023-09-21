@@ -1,6 +1,7 @@
 package com.yourink.domain.link;
 
 import com.yourink.domain.base.BaseAuditEntity;
+import com.yourink.domain.tag.Tag;
 import com.yourink.domain.tag.TagLinkMap;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -39,5 +40,11 @@ public class Link extends BaseAuditEntity {
 
     public void addTagLinkMap(TagLinkMap tagLinkMap) {
         tagLinkMaps.add(tagLinkMap);
+    }
+
+    public List<Tag> getTags() {
+        return tagLinkMaps.stream()
+                          .map(TagLinkMap::getTag)
+                          .toList();
     }
 }
