@@ -6,6 +6,7 @@ import com.yourink.domain.tag.TagLinkMap;
 import com.yourink.repository.link.LinkRepository;
 import com.yourink.repository.tag.TagRepository;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,26 +28,30 @@ class TagLinkMapWriteServiceTest {
     @Autowired
     private TagRepository tagRepository;
 
-    @Test
-    @DisplayName("Link와 Tag의 연결 객체인 TagLinkMap을 생성한다")
-    void create_tag_link_map() {
-        // given
-        var link = Link.create("title", "linkUrl");
-        var tag = Tag.create("tag1");
+    @Nested
+    @DisplayName("TagLinkMap 생성 테스트")
+    class TagLinkMapCreateTest {
+        @Test
+        @DisplayName("Link와 Tag의 연결 객체인 TagLinkMap을 생성한다")
+        void create_tag_link_map() {
+            // given
+            var link = Link.create("title", "linkUrl");
+            var tag = Tag.create("tag1");
 
-        var savedLink = linkRepository.save(link);
-        var savedTag = tagRepository.save(tag);
+            var savedLink = linkRepository.save(link);
+            var savedTag = tagRepository.save(tag);
 
-        // when
-        var result = tagLinkMapWriteService.createTagLinkMap(savedLink, List.of(savedTag.getName()));
+            // when
+            var result = tagLinkMapWriteService.createTagLinkMap(savedLink, List.of(savedTag.getName()));
 
-        // then
-        assertThat(result)
-                .extracting(TagLinkMap::getLink)
-                .containsExactly(savedLink);
+            // then
+            assertThat(result)
+                    .extracting(TagLinkMap::getLink)
+                    .containsExactly(savedLink);
 
-        assertThat(result)
-                .extracting(TagLinkMap::getTag)
-                .containsExactly(savedTag);
+            assertThat(result)
+                    .extracting(TagLinkMap::getTag)
+                    .containsExactly(savedTag);
+        }
     }
 }
