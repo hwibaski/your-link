@@ -2,7 +2,7 @@ package com.yourink.link.service;
 
 import com.yourink.domain.link.Link;
 import com.yourink.repository.link.LinkRepository;
-import com.yourink.tag.service.TagLinkMapWriteService;
+import com.yourink.taglinkmap.service.TagLinkMapWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +25,9 @@ public class LinkWriteService {
     }
 
     @Transactional
-    public Link updateLink(Long id, String title, String linkUrl) {
-        var link = linkReadService.findLinkById(id);
-
+    public Link updateLink(Long id, String title, String linkUrl, List<String> newTags) {
+        var link = linkReadService.findLinkByIdWithTag(id);
+        tagLinkMapWriteService.replaceTagLinkMap(link, newTags);
         link.update(title, linkUrl);
 
         return link;
