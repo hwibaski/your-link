@@ -1,4 +1,4 @@
-package com.yourink.tag.service;
+package com.yourink.taglinkmap.service;
 
 import com.yourink.domain.link.Link;
 import com.yourink.domain.tag.Tag;
@@ -7,6 +7,7 @@ import com.yourink.repository.link.LinkQueryDslRepository;
 import com.yourink.repository.link.LinkRepository;
 import com.yourink.repository.tag.TagLinkMapRepository;
 import com.yourink.repository.tag.TagRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,12 @@ class TagLinkMapWriteServiceTest {
 
     @Autowired
     private LinkQueryDslRepository linkQueryDslRepository;
+
+    @AfterEach
+    void tearDown() {
+        tagRepository.deleteAllInBatch();
+    }
+
 
     @Nested
     @DisplayName("TagLinkMap 생성 테스트")

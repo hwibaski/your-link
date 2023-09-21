@@ -42,6 +42,8 @@ class LinkWriteServiceTest {
     @AfterEach
     void tearDown() {
         linkRepository.deleteAllInBatch();
+        tagRepository.deleteAllInBatch();
+        tagLinkMapRepository.deleteAllInBatch();
     }
 
     @Nested
@@ -125,7 +127,6 @@ class LinkWriteServiceTest {
 
             tagLinkMapRepository.save(TagLinkMap.create(savedLink, savedTag1));
             tagLinkMapRepository.save(TagLinkMap.create(savedLink, savedTag2));
-
 
             // when
             String titleAfterUpdate = "변경 후 타이틀";

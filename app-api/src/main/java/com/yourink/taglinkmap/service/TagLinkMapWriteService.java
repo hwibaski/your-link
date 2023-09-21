@@ -1,10 +1,13 @@
-package com.yourink.tag.service;
+package com.yourink.taglinkmap.service;
 
 import com.yourink.domain.link.Link;
 import com.yourink.domain.tag.Tag;
 import com.yourink.domain.tag.TagLinkMap;
 import com.yourink.repository.tag.TagLinkMapQueryDslRepository;
 import com.yourink.repository.tag.TagLinkMapRepository;
+import com.yourink.tag.service.TagWriteService;
+import com.yourink.taglinkmap.filter.CreateNewTagClassifier;
+import com.yourink.taglinkmap.filter.DeleteTagClassifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +20,8 @@ public class TagLinkMapWriteService {
     private final TagLinkMapRepository tagLinkMapRepository;
     private final TagWriteService tagWriteService;
     private final TagLinkMapQueryDslRepository tagLinkMapQueryDslRepository;
+    private final CreateNewTagClassifier createNewTagClassifier;
+    private final DeleteTagClassifier deleteTagClassifier;
 
     @Transactional
     public List<TagLinkMap> createTagLinkMap(Link link, List<String> tagNames) {
@@ -34,26 +39,13 @@ public class TagLinkMapWriteService {
 
     @Transactional
     public void replaceTagLinkMap(Link link, List<String> newTags) {
-        var tagsToDelete = filterTagsToDelete(link, newTags);
-        var tagsToCreate = filterNewTagsToCreate(link, newTags);
+        var tagsToDelete = deleteTagClassifier.filterTagsToDelete(link.getTags(), newTags);
+        var tagsToCreate = createNewTagClassifier.filterNewTagsToCreate(link.getTags(), newTags);
         createTagLinkMap(link, tagsToCreate);
         deleteTagLinkMapByLinkAndTags(link, tagsToDelete);
     }
 
     private void deleteTagLinkMapByLinkAndTags(Link link, List<Tag> tags) {
         tagLinkMapQueryDslRepository.deleteByLinkInAndTag(link, tags);
-    }
-
-    private List<String> filterNewTagsToCreate(Link link, List<String> newTags) {
-        return newTags.stream()
-                      .filter(tag -> link.getTags().stream()
-                                         .noneMatch(linkTag -> linkTag.getName().equals(tag)))
-                      .toList();
-    }
-
-    private List<Tag> filterTagsToDelete(Link link, List<String> newTags) {
-        return link.getTags()
-                   .stream()
-                   .filter(tag -> !newTags.contains(tag.getName())).toList();
     }
 }

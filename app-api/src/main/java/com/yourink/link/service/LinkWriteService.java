@@ -2,7 +2,7 @@ package com.yourink.link.service;
 
 import com.yourink.domain.link.Link;
 import com.yourink.repository.link.LinkRepository;
-import com.yourink.tag.service.TagLinkMapWriteService;
+import com.yourink.taglinkmap.service.TagLinkMapWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
