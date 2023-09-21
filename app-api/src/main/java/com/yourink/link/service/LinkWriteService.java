@@ -2,7 +2,7 @@ package com.yourink.link.service;
 
 import com.yourink.domain.link.Link;
 import com.yourink.repository.link.LinkRepository;
-import com.yourink.tag.service.TagLinkMapService;
+import com.yourink.tag.service.TagLinkMapWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,13 +13,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LinkWriteService {
     private final LinkRepository linkRepository;
-    private final TagLinkMapService tagLinkMapService;
+    private final TagLinkMapWriteService tagLinkMapWriteService;
     private final LinkReadService linkReadService;
 
     @Transactional
     public Link createLink(String title, String linkUrl, List<String> tags) {
         var savedLink = linkRepository.save(Link.create(title, linkUrl));
-        tagLinkMapService.createTagLinkMap(savedLink, tags);
+        tagLinkMapWriteService.createTagLinkMap(savedLink, tags);
 
         return savedLink;
     }

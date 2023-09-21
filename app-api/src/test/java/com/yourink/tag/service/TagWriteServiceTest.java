@@ -23,9 +23,9 @@ import static org.mockito.Mockito.verify;
 
 @ActiveProfiles("test")
 @SpringBootTest
-class TagServiceTest {
+class TagWriteServiceTest {
     @Autowired
-    private TagService tagService;
+    private TagWriteService tagWriteService;
 
     @Autowired
     private TagRepository tagRepository;
@@ -59,7 +59,7 @@ class TagServiceTest {
             List<String> tags = List.of(tag1, tag2, tag3);
 
             // when
-            var result = tagService.createTags(tags);
+            var result = tagWriteService.createTags(tags);
 
             // then
             assertThat(result).extracting("name").containsExactly(tag1, tag2, tag3);
@@ -73,7 +73,7 @@ class TagServiceTest {
             List<String> tagsToSave = List.of(tag1);
 
             // when
-            tagService.createTags(tagsToSave);
+            tagWriteService.createTags(tagsToSave);
 
             // then
             verify(notSavedTagFilter, times(1)).filterNotSavedTag(any(), any());
@@ -87,7 +87,7 @@ class TagServiceTest {
             List<String> tags = List.of(tag1);
 
             // when
-            var result = tagService.createTags(tags);
+            var result = tagWriteService.createTags(tags);
 
             // then
             assertThat(result).extracting("name").containsExactly("tag1");
@@ -101,7 +101,7 @@ class TagServiceTest {
             List<String> tags = List.of(tag1);
 
             // when
-            tagService.createTags(tags);
+            tagWriteService.createTags(tags);
 
             // then
             verify(validTagFilter, times(1)).filterValidTags(any());
@@ -115,7 +115,7 @@ class TagServiceTest {
             List<String> tags = List.of(tag1);
 
             // when
-            tagService.createTags(tags);
+            tagWriteService.createTags(tags);
 
             // then
             verify(tagSanitizer, times(1)).trimAndToLowerCase(any());
@@ -130,7 +130,7 @@ class TagServiceTest {
             List<String> tags = List.of(tag1, tag2);
 
             // when
-            List<Tag> result = tagService.createTags(tags);
+            List<Tag> result = tagWriteService.createTags(tags);
 
             // then
             assertThat(result).extracting("name").containsExactly(tag2);

@@ -12,13 +12,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TagLinkMapService {
+public class TagLinkMapWriteService {
     private final TagLinkMapRepository tagLinkMapRepository;
-    private final TagService tagService;
+    private final TagWriteService tagWriteService;
 
     @Transactional
     public List<TagLinkMap> createTagLinkMap(Link link, List<String> tagNames) {
-        List<Tag> tags = tagService.createTags(tagNames);
+        List<Tag> tags = tagWriteService.createTags(tagNames);
         List<TagLinkMap> tagLinkMaps = mappingTagsAndLink(link, tags);
 
         return tagLinkMapRepository.saveAll(tagLinkMaps);
