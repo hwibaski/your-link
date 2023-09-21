@@ -45,3 +45,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: false
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          sql: trace
