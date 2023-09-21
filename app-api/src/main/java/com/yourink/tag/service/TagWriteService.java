@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class TagService {
+public class TagWriteService {
     private final NotSavedTagFilter notSavedTagFilter;
     private final TagRepository tagRepository;
     private final ValidTagFilter validTagFilter;

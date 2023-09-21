@@ -17,9 +17,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ActiveProfiles("test")
 @SpringBootTest
-class MemberServiceTest {
+class MemberWriteServiceTest {
     @Autowired
-    private MemberService memberService;
+    private MemberWriteService memberWriteService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -39,7 +39,7 @@ class MemberServiceTest {
             String email = "temp@gmail.com";
 
             // when
-            var result = memberService.createMember(email);
+            var result = memberWriteService.createMember(email);
 
             // then
             assertThat(result.id()).isNotNull();
@@ -55,7 +55,7 @@ class MemberServiceTest {
 
             // when
             // then
-            assertThatThrownBy(() -> memberService.createMember(email))
+            assertThatThrownBy(() -> memberWriteService.createMember(email))
                     .isInstanceOf(DuplicatedResourceException.class)
                     .hasMessage(ErrorCode.DUPLICATED_RESOURCE.getMessage());
         }

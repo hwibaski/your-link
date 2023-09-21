@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberWriteService {
     private final MemberRepository memberRepository;
 
     public MemberResponse createMember(String email) {

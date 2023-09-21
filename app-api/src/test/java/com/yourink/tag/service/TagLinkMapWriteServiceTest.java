@@ -17,9 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @SpringBootTest
-class TagLinkMapServiceTest {
+class TagLinkMapWriteServiceTest {
     @Autowired
-    private TagLinkMapService tagLinkMapService;
+    private TagLinkMapWriteService tagLinkMapWriteService;
 
     @Autowired
     private LinkRepository linkRepository;
@@ -38,7 +38,7 @@ class TagLinkMapServiceTest {
         var savedTag = tagRepository.save(tag);
 
         // when
-        var result = tagLinkMapService.createTagLinkMap(savedLink, List.of(savedTag.getName()));
+        var result = tagLinkMapWriteService.createTagLinkMap(savedLink, List.of(savedTag.getName()));
 
         // then
         assertThat(result)
