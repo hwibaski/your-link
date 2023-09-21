@@ -8,7 +8,6 @@ import com.yourink.link.controller.dto.GetLinkListResponse;
 import com.yourink.link.controller.dto.GetLinkResponse;
 import com.yourink.repository.link.LinkQueryDslRepository;
 import com.yourink.repository.link.LinkRepository;
-import com.yourink.repository.tag.TagRepository;
 import com.yourink.service.PaginationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,17 +16,12 @@ import java.util.List;
 
 @Service
 public class LinkReadService {
-    private final LinkRepository linkRepository;
     private final LinkQueryDslRepository linkQueryDslRepository;
     private final PaginationService paginationService;
-    private final TagRepository tagRepository;
 
-    public LinkReadService(LinkRepository linkRepository,
-            LinkQueryDslRepository linkQueryDslRepository, TagRepository tagRepository) {
-        this.linkRepository = linkRepository;
+    public LinkReadService(LinkRepository linkRepository, LinkQueryDslRepository linkQueryDslRepository) {
         this.linkQueryDslRepository = linkQueryDslRepository;
         this.paginationService = new PaginationService(linkRepository);
-        this.tagRepository = tagRepository;
     }
 
     @Transactional(readOnly = true)
@@ -59,7 +53,7 @@ public class LinkReadService {
         return new GetLinkResponse(link.getId(), link.getTitle(), link.getLinkUrl(), mappingTagsFromLink(link));
     }
 
-    private Link findLinkByIdWithTag(Long linkId) {
+    protected Link findLinkByIdWithTag(Long linkId) {
         return linkQueryDslRepository.findLinkByIdWithTags(linkId)
                                      .orElseThrow(
                                              () -> new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus())
@@ -71,12 +65,5 @@ public class LinkReadService {
                    .stream()
                    .map(tagLinkMap -> tagLinkMap.getTag().getName())
                    .toList();
-    }
-
-    protected Link findLinkById(Long linkId) {
-        return linkRepository.findById(linkId)
-                             .orElseThrow(
-                                     () -> new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus())
-                             );
     }
 }
