@@ -30,7 +30,7 @@ public class LinkController {
     @PatchMapping("/api/v1/link")
     public ResponseEntity<ApiResponse<UpdateLinkResponse>> updateLink(
             @Valid @RequestBody UpdateLinkRequest updateLinkRequest) {
-        var result = linkWriteService.updateLink(updateLinkRequest.id(), updateLinkRequest.title(), updateLinkRequest.linkUrl());
+        var result = linkWriteService.updateLink(updateLinkRequest.id(), updateLinkRequest.title(), updateLinkRequest.linkUrl(), updateLinkRequest.tags());
 
         return ResponseEntity.status(HttpStatus.OK)
                              .body(ApiResponse.success("링크의 수정이 완료되었습니다", new UpdateLinkResponse(result.getId())));

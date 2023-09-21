@@ -207,13 +207,14 @@ class LinkControllerTest {
                 // given
                 Link mockLink = mock(Link.class);
                 given(mockLink.getId()).willReturn(1L);
-                given(linkWriteService.updateLink(any(), any(), any())).willReturn(mockLink);
+                given(linkWriteService.updateLink(any(), any(), any(), any())).willReturn(mockLink);
 
                 Long id = 1L;
                 String titleAfterUpdate = "변경 후 타이틀";
                 String linkUrlAfterUpdate = "http://www.linkToUpdate.com";
+                List<String> newTags = List.of("tag1", "tag2");
 
-                var requestDto = new UpdateLinkRequest(id, titleAfterUpdate, linkUrlAfterUpdate);
+                var requestDto = new UpdateLinkRequest(id, titleAfterUpdate, linkUrlAfterUpdate, newTags);
                 var requestBody = objectMapper.writeValueAsString(requestDto);
 
                 // when
@@ -235,11 +236,12 @@ class LinkControllerTest {
                 Long id = 1L;
                 String titleToUpdate = "변경 요청 타이틀";
                 String linkUrlToUpdate = "http://www.linkToUpdate.com";
+                List<String> newTags = List.of("tag1", "tag2");
 
-                var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
+                var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate, newTags);
                 var requestBody = objectMapper.writeValueAsString(requestDto);
 
-                given(linkWriteService.updateLink(any(), any(), any()))
+                given(linkWriteService.updateLink(any(), any(), any(), any()))
                         .willThrow(new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus()));
 
                 // when
@@ -262,8 +264,9 @@ class LinkControllerTest {
             Long id = null;
             String titleToUpdate = "변경 요청 타이틀";
             String linkUrlToUpdate = "http://www.linkToUpdate.com";
+            List<String> newTags = List.of("tag1", "tag2");
 
-            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate, newTags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -285,8 +288,9 @@ class LinkControllerTest {
             Long id = 1L;
             String titleToUpdate = "";
             String linkUrlToUpdate = "http://www.linkBeforeUpdate.com";
+            List<String> newTags = List.of("tag1", "tag2");
 
-            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate, newTags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -308,8 +312,9 @@ class LinkControllerTest {
             Long id = 1L;
             String titleToUpdate = null;
             String linkUrlToUpdate = "http://www.linkBeforeUpdate.com";
+            List<String> newTags = List.of("tag1", "tag2");
 
-            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate, newTags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -331,8 +336,9 @@ class LinkControllerTest {
             Long id = 1L;
             String titleToUpdate = "변경 전 타이틀";
             String linkUrlToUpdate = "I am not URL";
+            List<String> newTags = List.of("tag1", "tag2");
 
-            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate, newTags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -354,8 +360,9 @@ class LinkControllerTest {
             Long id = 1L;
             String titleToUpdate = "변경 전 타이틀";
             String linkUrlToUpdate = null;
+            List<String> newTags = List.of("tag1", "tag2");
 
-            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate, newTags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
@@ -377,8 +384,9 @@ class LinkControllerTest {
             Long id = null;
             String titleToUpdate = null;
             String linkUrlToUpdate = null;
+            List<String> newTags = List.of("tag1", "tag2");
 
-            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate);
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate, newTags);
             var requestBody = objectMapper.writeValueAsString(requestDto);
 
             // when
