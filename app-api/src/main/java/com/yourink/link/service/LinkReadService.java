@@ -18,10 +18,12 @@ import java.util.List;
 public class LinkReadService {
     private final LinkQueryDslRepository linkQueryDslRepository;
     private final PaginationService paginationService;
+    private final LinkRepository linkRepository;
 
     public LinkReadService(LinkRepository linkRepository, LinkQueryDslRepository linkQueryDslRepository) {
         this.linkQueryDslRepository = linkQueryDslRepository;
         this.paginationService = new PaginationService(linkRepository);
+        this.linkRepository = linkRepository;
     }
 
     @Transactional(readOnly = true)
@@ -45,12 +47,15 @@ public class LinkReadService {
         return new GetLinkListResponse(link.getId(), link.getTitle(), link.getLinkUrl(), tags);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public GetLinkResponse getLink(Long linkId) {
-        var link = findLinkByIdWithTag(linkId);
+        var link = linkRepository.findById(linkId)
+                                 .orElseThrow(
+                                         () -> new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus())
+                                 );
+        linkRepository.updateHitCount(linkId);
 
-
-        return new GetLinkResponse(link.getId(), link.getTitle(), link.getLinkUrl(), mappingTagsFromLink(link));
+        return new GetLinkResponse(link.getId(), link.getTitle(), link.getLinkUrl());
     }
 
     protected Link findLinkByIdWithTag(Long linkId) {

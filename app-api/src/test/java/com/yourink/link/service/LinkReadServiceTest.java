@@ -1,8 +1,6 @@
 package com.yourink.link.service;
 
 import com.yourink.domain.link.Link;
-import com.yourink.domain.tag.Tag;
-import com.yourink.domain.tag.TagLinkMap;
 import com.yourink.dto.api.ErrorCode;
 import com.yourink.exception.NotFoundException;
 import com.yourink.link.controller.dto.GetLinkListResponse;
@@ -18,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -206,7 +205,7 @@ class LinkReadServiceTest {
     @Nested
     @DisplayName("단일 링크 조회 테스트")
     class getLinkTest {
-        @DisplayName("단일 링크를 id를 이용해 조회한다. 태그를 가지고 있지 않아도 조회가 가능하다.")
+        @DisplayName("단일 링크를 id를 이용해 조회한다")
         @Test
         void get_link_by_id_without_tag() {
             // given
@@ -220,24 +219,8 @@ class LinkReadServiceTest {
 
             // then
             assertThat(result.id()).isEqualTo(savedLink.getId());
-        }
-
-        @DisplayName("단일 링크를 id를 이용해 조회한다. 해당 링크가 가지고 있는 태그가 있다면 같이 반환한다.")
-        @Test
-        void get_link_by_id_with_tag() {
-            // given
-            var linkToSave = Link.create("타이틀-1", "https://www.naver.com/1");
-            var tagToSave = Tag.create("태그1");
-            var savedTag = tagRepository.save(tagToSave);
-            var savedLink = linkRepository.save(linkToSave);
-            tagLinkMapRepository.save(TagLinkMap.create(savedLink, savedTag));
-
-            // when
-            var result = linkReadService.getLink(savedLink.getId());
-
-            // then
-            assertThat(result.id()).isEqualTo(savedLink.getId());
-            assertThat(result.tags()).containsExactly("태그1");
+            assertThat(result.title()).isEqualTo(savedLink.getTitle());
+            assertThat(result.linkUrl()).isEqualTo(savedLink.getLinkUrl());
         }
 
         @DisplayName("해당 하는 id의 링크가 없을 경우 예외를 발생시킨다.")
@@ -250,6 +233,20 @@ class LinkReadServiceTest {
             assertThatThrownBy(() -> linkReadService.getLink(linkIdToGet))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage(ErrorCode.NOT_FOUND.getMessage());
+        }
+
+        @DisplayName("링크 조회수 증가 테스트")
+        @Test
+        void get_link_increase_count() {
+            // given
+            var link = linkRepository.save(Link.create("타이틀-1", "https://www.naver.com/1"));
+
+            // when
+            linkReadService.getLink(link.getId());
+
+            // then
+            Optional<Link> byId = linkRepository.findById(link.getId());
+            assertThat(byId.get().getHitCount()).isEqualTo(1);
         }
     }
 }

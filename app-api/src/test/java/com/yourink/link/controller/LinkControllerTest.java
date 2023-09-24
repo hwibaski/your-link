@@ -473,24 +473,20 @@ class LinkControllerTest {
     @Nested
     @DisplayName("단일 링크 조회 테스트")
     class GetLinkTest {
-        private final String testApiPath = "/api/v1/link";
+        private final String testApiPath = "/api/v1/link/{id}";
 
         @Test
         @DisplayName("링크를 조회한다.")
         void getLink_success() throws Exception {
             // given
-            Long linkIdToGet = 1L;
 
-            var requestDto = new GetLinkRequest(linkIdToGet);
-            var requestBody = objectMapper.writeValueAsString(requestDto);
-
-            given(linkReadService.getLink(any())).willReturn(new GetLinkResponse(1L, "타이틀", "https://www.naver.com", List.of("tag1", "tag2")));
+            given(linkReadService.getLink(any())).willReturn(new GetLinkResponse(1L, "타이틀", "https://www.naver.com"));
 
             // when
             // then
-            mockMvc.perform(get(testApiPath)
+            mockMvc.perform(get(testApiPath, 1L)
                                     .contentType(APPLICATION_JSON)
-                                    .content(requestBody))
+                   )
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.success").value(true))
                    .andExpect(jsonPath("$.code").value("OK"))
@@ -512,7 +508,7 @@ class LinkControllerTest {
 
             // when
             // then
-            mockMvc.perform(get(testApiPath)
+            mockMvc.perform(get(testApiPath, 1L)
                                     .contentType(APPLICATION_JSON)
                                     .content(requestBody))
                    .andExpect(status().isNotFound())
@@ -520,27 +516,6 @@ class LinkControllerTest {
                    .andExpect(jsonPath("$.message").value("요청한 자원을 찾을 수 없습니다"))
                    .andExpect(jsonPath("$.code").value("NOT_FOUND"))
                    .andExpect(jsonPath("$.data").isEmpty());
-        }
-
-        @Test
-        @DisplayName("링크의 id가 null이면 400 에러를 반환한다.")
-        void getLink_id_is_null() throws Exception {
-            // given
-            Long linkIdToGet = null;
-
-            var requestDto = new GetLinkRequest(linkIdToGet);
-            var requestBody = objectMapper.writeValueAsString(requestDto);
-
-            // when
-            // then
-            mockMvc.perform(get(testApiPath)
-                                    .contentType(APPLICATION_JSON)
-                                    .content(requestBody))
-                   .andExpect(status().isBadRequest())
-                   .andExpect(jsonPath("$.success").value(false))
-                   .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
-                   .andExpect(jsonPath("$.code").value("BAD_REQUEST"))
-                   .andExpect(jsonPath("$.validation.id").value("아이디를 확인해주세요"));
         }
     }
 }
