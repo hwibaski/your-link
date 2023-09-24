@@ -21,6 +21,8 @@ public class Link extends BaseAuditEntity {
 
     private String linkUrl;
 
+    private int hitCount = 0;
+
     @OneToMany(mappedBy = "link", fetch = FetchType.LAZY)
     private List<TagLinkMap> tagLinkMaps = new ArrayList<>();
 
