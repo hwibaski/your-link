@@ -45,10 +45,10 @@ public class LinkController {
                              .body(ApiResponse.success("링크 목록 조회가 완료되었습니다.", result));
     }
 
-    @GetMapping("/api/v1/link")
+    @GetMapping("/api/v1/link/{id}")
     public ResponseEntity<ApiResponse<GetLinkResponse>> getLink(
-            @Valid @RequestBody GetLinkRequest getLinkRequest) {
-        var result = linkReadService.getLink(getLinkRequest.id());
+            @PathVariable("id") Long id) {
+        var result = linkReadService.getLink(id);
 
         return ResponseEntity.status(HttpStatus.OK)
                              .body(ApiResponse.success("링크 조회가 완료되었습니다.", result));
