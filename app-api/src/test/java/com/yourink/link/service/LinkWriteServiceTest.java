@@ -93,7 +93,7 @@ class LinkWriteServiceTest {
             String titleAfterUpdate = "변경 후 타이틀";
             String linkUrlAfterUpdate = "https://www.google.com";
             List<String> newTags = List.of("tag1", "tag2");
-            var result = linkService.updateLink(savedLink.getId(), titleAfterUpdate, linkUrlAfterUpdate, newTags);
+            var result = linkService.updateLink(savedLink.getId(), titleAfterUpdate, linkUrlAfterUpdate, newTags, savedMember.getId());
 
             // then
             assertThat(result.getTitle()).isEqualTo(titleAfterUpdate);
@@ -111,8 +111,9 @@ class LinkWriteServiceTest {
             String titleAfterUpdate = "변경 후 타이틀";
             String linkUrlAfterUpdate = "https://www.google.com";
             List<String> newTags = List.of("tag1", "tag2");
+            Long fakeMemberId = 1L;
 
-            assertThatThrownBy(() -> linkService.updateLink(id, titleAfterUpdate, linkUrlAfterUpdate, newTags))
+            assertThatThrownBy(() -> linkService.updateLink(id, titleAfterUpdate, linkUrlAfterUpdate, newTags, fakeMemberId))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage("요청한 자원을 찾을 수 없습니다");
         }
@@ -141,8 +142,8 @@ class LinkWriteServiceTest {
             String titleAfterUpdate = "변경 후 타이틀";
             String linkUrlAfterUpdate = "https://www.google.com";
             List<String> newTags = List.of("tag2", "tag3");
-            linkService.updateLink(savedLink.getId(), titleAfterUpdate, linkUrlAfterUpdate, newTags);
-            var result = linkQueryDslRepository.findLinkByIdWithTags(savedLink.getId());
+            linkService.updateLink(savedLink.getId(), titleAfterUpdate, linkUrlAfterUpdate, newTags, savedMember.getId());
+            var result = linkQueryDslRepository.findLinkByIAndMemberIdWithTags(savedLink.getId(), savedMember.getId());
 
             // then
             assertThat(result.get().getTags()).extracting("name").containsExactlyInAnyOrder("tag2", "tag3");

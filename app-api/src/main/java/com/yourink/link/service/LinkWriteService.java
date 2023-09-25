@@ -26,8 +26,8 @@ public class LinkWriteService {
     }
 
     @Transactional
-    public Link updateLink(Long id, String title, String linkUrl, List<String> newTags) {
-        var link = linkReadService.findLinkByIdWithTag(id);
+    public Link updateLink(Long linkId, String title, String linkUrl, List<String> newTags, Long memberId) {
+        var link = linkReadService.findLinkByIdAndMemberIdWithTag(linkId, memberId);
         tagLinkMapWriteService.replaceTagLinkMap(link, newTags);
         link.update(title, linkUrl);
 
