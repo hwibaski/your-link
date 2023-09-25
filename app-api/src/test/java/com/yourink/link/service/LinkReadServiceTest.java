@@ -161,9 +161,6 @@ class LinkReadServiceTest {
                     .toList();
 
             List<Link> links = linkRepository.saveAll(linksToSave);
-            links.forEach(link -> System.out.println(link.getId()));
-            System.out.println(links.get(5)
-                                    .getId());
 
             // when
             int size = 5;

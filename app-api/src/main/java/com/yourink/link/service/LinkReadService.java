@@ -58,8 +58,8 @@ public class LinkReadService {
         return new GetLinkResponse(link.getId(), link.getTitle(), link.getLinkUrl());
     }
 
-    protected Link findLinkByIdWithTag(Long linkId) {
-        return linkQueryDslRepository.findLinkByIdWithTags(linkId)
+    protected Link findLinkByIdAndMemberIdWithTag(Long linkId, Long memberId) {
+        return linkQueryDslRepository.findLinkByIAndMemberIdWithTags(linkId, memberId)
                                      .orElseThrow(
                                              () -> new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus())
                                      );

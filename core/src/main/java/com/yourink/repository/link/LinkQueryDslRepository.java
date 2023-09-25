@@ -33,13 +33,13 @@ public class LinkQueryDslRepository {
                               .fetch();
     }
 
-    public Optional<Link> findLinkByIdWithTags(Long linkId) {
+    public Optional<Link> findLinkByIAndMemberIdWithTags(Long linkId, Long memberId) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(link)
                                                   .leftJoin(link.tagLinkMaps, tagLinkMap)
                                                   .fetchJoin()
                                                   .leftJoin(tagLinkMap.tag, tag)
                                                   .fetchJoin()
-                                                  .where(link.id.eq(linkId))
+                                                  .where(link.id.eq(linkId).and(link.member.id.eq(memberId)))
                                                   .fetchOne());
     }
 }

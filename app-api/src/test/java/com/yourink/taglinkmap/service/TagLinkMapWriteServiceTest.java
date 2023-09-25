@@ -99,7 +99,7 @@ class TagLinkMapWriteServiceTest {
 
             // when
             tagLinkMapWriteService.replaceTagLinkMap(savedLink, List.of("tag2", "tag3"));
-            Optional<Link> result = linkQueryDslRepository.findLinkByIdWithTags(savedLink.getId());
+            Optional<Link> result = linkQueryDslRepository.findLinkByIAndMemberIdWithTags(savedLink.getId(), savedMember.getId());
 
             // then
             assertThat(result.get().getTags()).extracting("name").containsExactly("tag2", "tag3");
