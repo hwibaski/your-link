@@ -179,6 +179,29 @@ class LinkControllerTest {
                    .andExpect(jsonPath("$.validation.linkUrl").value("URL 형식을 확인해주세요"));
         }
 
+        @Test
+        @DisplayName("쿼리 스트링에 memberId를 보내지 않으면 요청이 실패한다.")
+        void createLink_fail_when_member_id_query_string_missing() throws Exception {
+            // given
+            String title = "타이틀";
+            String linkUrl = "http://www.yourlink.com";
+            List<String> tags = List.of("tag1", "tag2");
+
+            var requestDto = new CreateLinkRequest(title, linkUrl, tags);
+            var requestBody = objectMapper.writeValueAsString(requestDto);
+
+            // when
+            // then
+            mockMvc.perform(post(testApiPath)
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody)
+                   )
+                   .andExpect(status().isBadRequest())
+                   .andExpect(jsonPath("$.success").value(false))
+                   .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
+                   .andExpect(jsonPath("$.code").value("BAD_REQUEST"))
+                   .andExpect(jsonPath("$.validation.memberId").value("쿼리 스트링 파라미터가 존재하지 않습니다."));
+        }
     }
 
 
@@ -421,6 +444,31 @@ class LinkControllerTest {
                    .andExpect(jsonPath("$.validation.title").value("타이틀을 확인해주세요"))
                    .andExpect(jsonPath("$.validation.linkUrl").value("URL 형식을 확인해주세요"));
         }
+
+        @Test
+        @DisplayName("쿼리 스트링에 memberId를 보내지 않으면 요청이 실패한다.")
+        void createLink_fail_when_member_id_query_string_missing() throws Exception {
+            // given
+            Long id = 1L;
+            String titleAfterUpdate = "변경 후 타이틀";
+            String linkUrlAfterUpdate = "http://www.linkToUpdate.com";
+            List<String> newTags = List.of("tag1", "tag2");
+
+            var requestDto = new UpdateLinkRequest(id, titleAfterUpdate, linkUrlAfterUpdate, newTags);
+            var requestBody = objectMapper.writeValueAsString(requestDto);
+
+            // when
+            // then
+            mockMvc.perform(post(testApiPath)
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody)
+                   )
+                   .andExpect(status().isBadRequest())
+                   .andExpect(jsonPath("$.success").value(false))
+                   .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
+                   .andExpect(jsonPath("$.code").value("BAD_REQUEST"))
+                   .andExpect(jsonPath("$.validation.memberId").value("쿼리 스트링 파라미터가 존재하지 않습니다."));
+        }
     }
 
     @Nested
@@ -502,6 +550,25 @@ class LinkControllerTest {
                    .andExpect(jsonPath("$.data.data.length()").value(0))
                    .andExpect(jsonPath("$.data.hasNext").value(false));
         }
+
+        @Test
+        @DisplayName("쿼리 스트링에 memberId를 보내지 않으면 요청이 실패한다.")
+        void getLinks_fail_when_member_id_query_string_missing() throws Exception {
+            // given
+
+            // when
+            // then
+            mockMvc.perform(get(testApiPath)
+                                    .param("id", "1")
+                                    .param("size", "10")
+                                    .contentType(APPLICATION_JSON)
+                   )
+                   .andExpect(status().isBadRequest())
+                   .andExpect(jsonPath("$.success").value(false))
+                   .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
+                   .andExpect(jsonPath("$.code").value("BAD_REQUEST"))
+                   .andExpect(jsonPath("$.validation.memberId").value("쿼리 스트링 파라미터가 존재하지 않습니다."));
+        }
     }
 
     @Nested
@@ -547,6 +614,23 @@ class LinkControllerTest {
                    .andExpect(jsonPath("$.message").value("요청한 자원을 찾을 수 없습니다"))
                    .andExpect(jsonPath("$.code").value("NOT_FOUND"))
                    .andExpect(jsonPath("$.data").isEmpty());
+        }
+
+        @Test
+        @DisplayName("memberId를 쿼리 스트링으로 보내지 않으면 예외가 발생한다")
+        void getLink_when_missing_memberId_query_param() throws Exception {
+            // given
+            // when
+            // then
+            Long linkIdToGet = 1L;
+            mockMvc.perform(get(testApiPath, linkIdToGet)
+                                    .contentType(APPLICATION_JSON))
+                   .andExpect(status().isBadRequest())
+                   .andExpect(jsonPath("$.success").value(false))
+                   .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
+                   .andExpect(jsonPath("$.code").value("BAD_REQUEST"))
+                   .andExpect(jsonPath("$.data").isEmpty())
+                   .andExpect(jsonPath("$.validation.memberId").value("쿼리 스트링 파라미터가 존재하지 않습니다."));
         }
     }
 }
