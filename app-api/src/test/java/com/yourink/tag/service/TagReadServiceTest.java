@@ -1,9 +1,11 @@
 package com.yourink.tag.service;
 
 import com.yourink.domain.link.Link;
+import com.yourink.domain.member.Member;
 import com.yourink.domain.tag.Tag;
 import com.yourink.domain.tag.TagLinkMap;
 import com.yourink.repository.link.LinkRepository;
+import com.yourink.repository.member.MemberRepository;
 import com.yourink.repository.tag.TagLinkMapRepository;
 import com.yourink.repository.tag.TagRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -31,6 +33,9 @@ class TagReadServiceTest {
     @Autowired
     private LinkRepository linkRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @AfterEach
     void tearDown() {
         tagRepository.deleteAllInBatch();
@@ -43,7 +48,8 @@ class TagReadServiceTest {
         @DisplayName("특정 링크와 연결된 태그를 조회한다.")
         void get_tags_by_connected_link_by_id() {
             // given
-            var savedLink = linkRepository.save(Link.create("타이틀", "https://www.naver.com"));
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
+            var savedLink = linkRepository.save(Link.create("타이틀", "https://www.naver.com", savedMember));
             var savedTag = tagRepository.save(Tag.create("태그1"));
             tagLinkMapRepository.save(TagLinkMap.create(savedLink, savedTag));
 

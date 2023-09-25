@@ -1,10 +1,12 @@
 package com.yourink.taglinkmap.service;
 
 import com.yourink.domain.link.Link;
+import com.yourink.domain.member.Member;
 import com.yourink.domain.tag.Tag;
 import com.yourink.domain.tag.TagLinkMap;
 import com.yourink.repository.link.LinkQueryDslRepository;
 import com.yourink.repository.link.LinkRepository;
+import com.yourink.repository.member.MemberRepository;
 import com.yourink.repository.tag.TagLinkMapRepository;
 import com.yourink.repository.tag.TagRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -38,9 +40,15 @@ class TagLinkMapWriteServiceTest {
     @Autowired
     private LinkQueryDslRepository linkQueryDslRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @AfterEach
     void tearDown() {
         tagRepository.deleteAllInBatch();
+        linkRepository.deleteAllInBatch();
+        tagLinkMapRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
     }
 
 
@@ -51,7 +59,8 @@ class TagLinkMapWriteServiceTest {
         @DisplayName("Link와 Tag의 연결 객체인 TagLinkMap을 생성한다")
         void create_tag_link_map() {
             // given
-            var link = Link.create("title", "linkUrl");
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
+            var link = Link.create("title", "linkUrl", savedMember);
             var tag = Tag.create("tag1");
 
             var savedLink = linkRepository.save(link);
@@ -79,7 +88,8 @@ class TagLinkMapWriteServiceTest {
         @DisplayName("주어진 문자열 태그 리스트와 기존의 링크가 가지고 있는 태그들의 이름을 대조한 뒤 겹치지 않는 태그는 새로 생성하고, 주어진 문자열과 겹치지 않는 태그의 TagLinkMap을 삭제한다")
         void replace_tag_link_map() {
             // given
-            var link = Link.create("title", "linkUrl");
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
+            var link = Link.create("title", "linkUrl", savedMember);
             var tag = Tag.create("tag1");
 
             var savedLink = linkRepository.save(link);

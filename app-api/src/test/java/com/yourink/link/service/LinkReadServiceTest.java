@@ -1,10 +1,12 @@
 package com.yourink.link.service;
 
 import com.yourink.domain.link.Link;
+import com.yourink.domain.member.Member;
 import com.yourink.dto.api.ErrorCode;
 import com.yourink.exception.NotFoundException;
 import com.yourink.link.controller.dto.GetLinkListResponse;
 import com.yourink.repository.link.LinkRepository;
+import com.yourink.repository.member.MemberRepository;
 import com.yourink.repository.tag.TagLinkMapRepository;
 import com.yourink.repository.tag.TagRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -38,11 +40,15 @@ class LinkReadServiceTest {
     @Autowired
     private TagLinkMapRepository tagLinkMapRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @AfterEach
     void tearDown() {
         tagLinkMapRepository.deleteAllInBatch();
         linkRepository.deleteAllInBatch();
         tagRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
     }
 
     @Nested
@@ -52,9 +58,10 @@ class LinkReadServiceTest {
         @Test
         void get_links_by_id() {
             // given
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index, savedMember))
                     .toList();
 
             List<Link> links = linkRepository.saveAll(linksToSave);
@@ -73,9 +80,10 @@ class LinkReadServiceTest {
         @Test
         void get_links_by_id_order_by_desc() {
             // given
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index, savedMember))
                     .toList();
 
             List<Link> links = linkRepository.saveAll(linksToSave);
@@ -101,9 +109,10 @@ class LinkReadServiceTest {
         @Test
         void get_links_by_id_order_by_desc_when_id_is_null() {
             // given
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index, savedMember))
                     .toList();
 
             List<Link> links = linkRepository.saveAll(linksToSave);
@@ -125,9 +134,10 @@ class LinkReadServiceTest {
         @Test
         void get_links_by_id_order_by_desc_has_next_when_cursor_id_null() {
             // given
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index, savedMember))
                     .toList();
 
             linkRepository.saveAll(linksToSave);
@@ -144,9 +154,10 @@ class LinkReadServiceTest {
         @Test
         void get_links_by_id_order_by_desc_has_next_when_cursor_id_not_null() {
             // given
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index, savedMember))
                     .toList();
 
             List<Link> links = linkRepository.saveAll(linksToSave);
@@ -167,9 +178,10 @@ class LinkReadServiceTest {
         @Test
         void get_links_by_id_order_by_desc_has_next_false_when_cursor_id_null() {
             // given
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 3)
-                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index, savedMember))
                     .toList();
 
             linkRepository.saveAll(linksToSave);
@@ -186,9 +198,10 @@ class LinkReadServiceTest {
         @Test
         void get_links_by_id_order_by_desc_has_next_false_when_cursor_id_not_null() {
             // given
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
             List<Link> linksToSave = IntStream
                     .rangeClosed(1, 10)
-                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index))
+                    .mapToObj(index -> Link.create("타이틀-" + index, "https://www.naver.com/" + index, savedMember))
                     .toList();
 
             linkRepository.saveAll(linksToSave);
@@ -209,8 +222,8 @@ class LinkReadServiceTest {
         @Test
         void get_link_by_id_without_tag() {
             // given
-
-            var linkToSave = Link.create("타이틀-1", "https://www.naver.com/1");
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
+            var linkToSave = Link.create("타이틀-1", "https://www.naver.com/1", savedMember);
 
             Link savedLink = linkRepository.save(linkToSave);
 
@@ -239,7 +252,8 @@ class LinkReadServiceTest {
         @Test
         void get_link_increase_count() {
             // given
-            var link = linkRepository.save(Link.create("타이틀-1", "https://www.naver.com/1"));
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
+            var link = linkRepository.save(Link.create("타이틀-1", "https://www.naver.com/1", savedMember));
 
             // when
             linkReadService.getLink(link.getId());
