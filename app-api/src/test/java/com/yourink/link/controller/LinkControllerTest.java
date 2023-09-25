@@ -11,6 +11,7 @@ import com.yourink.link.controller.dto.GetLinkResponse;
 import com.yourink.link.controller.dto.UpdateLinkRequest;
 import com.yourink.link.service.LinkReadService;
 import com.yourink.link.service.LinkWriteService;
+import com.yourink.member.service.MemberReadService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,8 @@ class LinkControllerTest {
     private LinkWriteService linkWriteService;
     @MockBean
     private LinkReadService linkReadService;
+    @MockBean
+    private MemberReadService memberReadService;
 
     @Nested
     @DisplayName("링크 생성 테스트")
@@ -69,13 +72,13 @@ class LinkControllerTest {
 
             Link mockLink = mock(Link.class);
             given(mockLink.getId()).willReturn(1L);
-            given(linkWriteService.createLink(any(), any(), any())).willReturn(mockLink);
+            given(linkWriteService.createLink(any(), any(), any(), any())).willReturn(mockLink);
 
             // when
             // then
             mockMvc.perform(post(testApiPath)
                                     .contentType(APPLICATION_JSON)
-                                    .content(requestBody))
+                                    .content(requestBody).param("memberId", "1"))
                    .andExpect(status().isCreated())
                    .andExpect(jsonPath("$.success").value(true))
                    .andExpect(jsonPath("$.message").value("링크가 생성되었습니다."))

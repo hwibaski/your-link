@@ -6,6 +6,7 @@ import com.yourink.dto.page.CursorResult;
 import com.yourink.link.controller.dto.*;
 import com.yourink.link.service.LinkReadService;
 import com.yourink.link.service.LinkWriteService;
+import com.yourink.member.service.MemberReadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.*;
 public class LinkController {
     private final LinkWriteService linkWriteService;
     private final LinkReadService linkReadService;
+    private final MemberReadService memberReadService;
 
     @PostMapping("/api/v1/link")
     public ResponseEntity<ApiResponse<CreateLinkResponse>> createLink(
-            @Valid @RequestBody CreateLinkRequest createLinkRequest) {
-        var result = linkWriteService.createLink(createLinkRequest.title(), createLinkRequest.linkUrl(), createLinkRequest.tags());
+            @Valid @RequestBody CreateLinkRequest createLinkRequest, @RequestParam("memberId") Long memberId) {
+        var member = memberReadService.getMemberById(memberId);
+        var result = linkWriteService.createLink(createLinkRequest.title(), createLinkRequest.linkUrl(), createLinkRequest.tags(), member);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(ApiResponse.success("링크가 생성되었습니다.", new CreateLinkResponse(result.getId())));
