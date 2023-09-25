@@ -1,11 +1,13 @@
 package com.yourink.link.service;
 
 import com.yourink.domain.link.Link;
+import com.yourink.domain.member.Member;
 import com.yourink.domain.tag.Tag;
 import com.yourink.domain.tag.TagLinkMap;
 import com.yourink.exception.NotFoundException;
 import com.yourink.repository.link.LinkQueryDslRepository;
 import com.yourink.repository.link.LinkRepository;
+import com.yourink.repository.member.MemberRepository;
 import com.yourink.repository.tag.TagLinkMapRepository;
 import com.yourink.repository.tag.TagRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -39,11 +41,15 @@ class LinkWriteServiceTest {
     @Autowired
     private LinkQueryDslRepository linkQueryDslRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @AfterEach
     void tearDown() {
         linkRepository.deleteAllInBatch();
         tagRepository.deleteAllInBatch();
         tagLinkMapRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
     }
 
     @Nested
@@ -56,9 +62,10 @@ class LinkWriteServiceTest {
             String title = "타이틀";
             String linkUrl = "https://www.naver.com";
             List<String> tags = List.of("태그1", "태그2");
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
 
             // when
-            var result = linkService.createLink(title, linkUrl, tags);
+            var result = linkService.createLink(title, linkUrl, tags, savedMember);
 
             // then
             assertThat(result.getId()).isNotNull();
@@ -77,8 +84,9 @@ class LinkWriteServiceTest {
             // given
             String titleBeforeUpdate = "변경 전 타이틀";
             String linkUrlBeforeUpdate = "https://www.naver.com";
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
 
-            var linkToSave = Link.create(titleBeforeUpdate, linkUrlBeforeUpdate);
+            var linkToSave = Link.create(titleBeforeUpdate, linkUrlBeforeUpdate, savedMember);
             var savedLink = linkRepository.save(linkToSave);
 
             // when
@@ -116,8 +124,9 @@ class LinkWriteServiceTest {
             // given
             String titleBeforeUpdate = "변경 전 타이틀";
             String linkUrlBeforeUpdate = "https://www.naver.com";
+            Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
 
-            var linkToSave = Link.create(titleBeforeUpdate, linkUrlBeforeUpdate);
+            var linkToSave = Link.create(titleBeforeUpdate, linkUrlBeforeUpdate, savedMember);
             var savedLink = linkRepository.save(linkToSave);
 
             String tag1 = "tag1";
