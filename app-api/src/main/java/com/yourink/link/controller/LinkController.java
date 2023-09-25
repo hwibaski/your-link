@@ -52,8 +52,8 @@ public class LinkController {
 
     @GetMapping("/api/v1/link/{id}")
     public ResponseEntity<ApiResponse<GetLinkResponse>> getLink(
-            @PathVariable("id") Long id) {
-        var result = linkReadService.getLink(id);
+            @PathVariable("id") Long id, @RequestParam("memberId") Long memberId) {
+        var result = linkReadService.getLink(id, memberId);
 
         return ResponseEntity.status(HttpStatus.OK)
                              .body(ApiResponse.success("링크 조회가 완료되었습니다.", result));

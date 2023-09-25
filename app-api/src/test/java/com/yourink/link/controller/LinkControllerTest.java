@@ -513,13 +513,14 @@ class LinkControllerTest {
         @DisplayName("링크를 조회한다.")
         void getLink_success() throws Exception {
             // given
-            given(linkReadService.getLink(any())).willReturn(new GetLinkResponse(1L, "타이틀", "https://www.naver.com"));
+            given(linkReadService.getLink(any(), any())).willReturn(new GetLinkResponse(1L, "타이틀", "https://www.naver.com"));
 
             // when
             // then
             Long linkIdToGet = 1L;
             mockMvc.perform(get(testApiPath, linkIdToGet)
                                     .contentType(APPLICATION_JSON)
+                                    .param("memberId", "1")
                    )
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.success").value(true))
@@ -532,13 +533,14 @@ class LinkControllerTest {
         @DisplayName("해당하는 id의 링크가 없을 시 예외를 반환한다.")
         void getLink_when_link_not_found() throws Exception {
             // given
-            given(linkReadService.getLink(any()))
+            given(linkReadService.getLink(any(), any()))
                     .willThrow(new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus()));
 
             // when
             // then
             Long linkIdToGet = 1L;
             mockMvc.perform(get(testApiPath, linkIdToGet)
+                                    .param("memberId", "1")
                                     .contentType(APPLICATION_JSON))
                    .andExpect(status().isNotFound())
                    .andExpect(jsonPath("$.success").value(false))

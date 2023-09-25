@@ -48,8 +48,8 @@ public class LinkReadService {
     }
 
     @Transactional
-    public GetLinkResponse getLink(Long linkId) {
-        var link = linkRepository.findById(linkId)
+    public GetLinkResponse getLink(Long linkId, Long memberId) {
+        var link = linkRepository.findByIdAndMemberId(linkId, memberId)
                                  .orElseThrow(
                                          () -> new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus())
                                  );

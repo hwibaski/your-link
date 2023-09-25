@@ -225,7 +225,7 @@ class LinkReadServiceTest {
             Link savedLink = linkRepository.save(linkToSave);
 
             // when
-            var result = linkReadService.getLink(savedLink.getId());
+            var result = linkReadService.getLink(savedLink.getId(), savedMember.getId());
 
             // then
             assertThat(result.id()).isEqualTo(savedLink.getId());
@@ -240,7 +240,8 @@ class LinkReadServiceTest {
             // when
             // then
             Long linkIdToGet = 5L;
-            assertThatThrownBy(() -> linkReadService.getLink(linkIdToGet))
+            Long fakeMemberId = 1L;
+            assertThatThrownBy(() -> linkReadService.getLink(linkIdToGet, fakeMemberId))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage(ErrorCode.NOT_FOUND.getMessage());
         }
@@ -253,7 +254,7 @@ class LinkReadServiceTest {
             var link = linkRepository.save(Link.create("타이틀-1", "https://www.naver.com/1", savedMember));
 
             // when
-            linkReadService.getLink(link.getId());
+            linkReadService.getLink(link.getId(), savedMember.getId());
 
             // then
             Optional<Link> byId = linkRepository.findById(link.getId());
