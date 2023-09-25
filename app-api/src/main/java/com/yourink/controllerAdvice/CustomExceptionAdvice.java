@@ -1,11 +1,10 @@
 package com.yourink.controllerAdvice;
 
+import com.yourink.dto.api.ApiResponse;
+import com.yourink.exception.CustomException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.yourink.dto.api.ApiResponse;
-import com.yourink.exception.CustomException;
 
 @RestControllerAdvice
 public class CustomExceptionAdvice {
