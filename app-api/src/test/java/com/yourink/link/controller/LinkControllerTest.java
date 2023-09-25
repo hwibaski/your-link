@@ -2,6 +2,7 @@ package com.yourink.link.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yourink.domain.link.Link;
+import com.yourink.domain.member.Member;
 import com.yourink.dto.api.ErrorCode;
 import com.yourink.dto.page.CursorResult;
 import com.yourink.exception.NotFoundException;
@@ -11,6 +12,7 @@ import com.yourink.link.controller.dto.GetLinkResponse;
 import com.yourink.link.controller.dto.UpdateLinkRequest;
 import com.yourink.link.service.LinkReadService;
 import com.yourink.link.service.LinkWriteService;
+import com.yourink.member.service.MemberReadService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -50,6 +52,8 @@ class LinkControllerTest {
     private LinkWriteService linkWriteService;
     @MockBean
     private LinkReadService linkReadService;
+    @MockBean
+    private MemberReadService memberReadService;
 
     @Nested
     @DisplayName("링크 생성 테스트")
@@ -69,13 +73,13 @@ class LinkControllerTest {
 
             Link mockLink = mock(Link.class);
             given(mockLink.getId()).willReturn(1L);
-            given(linkWriteService.createLink(any(), any(), any())).willReturn(mockLink);
+            given(linkWriteService.createLink(any(), any(), any(), any())).willReturn(mockLink);
 
             // when
             // then
             mockMvc.perform(post(testApiPath)
                                     .contentType(APPLICATION_JSON)
-                                    .content(requestBody))
+                                    .content(requestBody).param("memberId", "1"))
                    .andExpect(status().isCreated())
                    .andExpect(jsonPath("$.success").value(true))
                    .andExpect(jsonPath("$.message").value("링크가 생성되었습니다."))
@@ -175,6 +179,78 @@ class LinkControllerTest {
                    .andExpect(jsonPath("$.validation.linkUrl").value("URL 형식을 확인해주세요"));
         }
 
+    }
+
+
+    @Nested
+    @DisplayName("링크 수정 테스트")
+    class UpdateLinkTest {
+        private final String testApiPath = "/api/v1/link";
+
+        @Test
+        @DisplayName("링크를 수정한다.")
+        void updateLink_success() throws Exception {
+            // given
+            Member mockMember = mock(Member.class);
+            given(mockMember.getId()).willReturn(1L);
+            given(memberReadService.getMemberById(any())).willReturn(mockMember);
+
+            Link mockLink = mock(Link.class);
+            given(mockLink.getId()).willReturn(1L);
+            given(linkWriteService.updateLink(any(), any(), any(), any(), any())).willReturn(mockLink);
+
+            Long id = 1L;
+            String titleAfterUpdate = "변경 후 타이틀";
+            String linkUrlAfterUpdate = "http://www.linkToUpdate.com";
+            List<String> newTags = List.of("tag1", "tag2");
+
+            var requestDto = new UpdateLinkRequest(id, titleAfterUpdate, linkUrlAfterUpdate, newTags);
+            var requestBody = objectMapper.writeValueAsString(requestDto);
+
+            // when
+            // then
+            mockMvc.perform(patch(testApiPath)
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody)
+                                    .param("memberId", "1"))
+                   .andExpect(status().isOk())
+                   .andExpect(jsonPath("$.success").value(true))
+                   .andExpect(jsonPath("$.message").value("링크의 수정이 완료되었습니다"))
+                   .andExpect(jsonPath("$.code").value("OK"))
+                   .andExpect(jsonPath("$.data.id").isNotEmpty());
+        }
+
+        @Test
+        @DisplayName("해당하는 id의 링크가 없으면 404 에러를 반환한다.")
+        void updateLink_not_found_link() throws Exception {
+            // given
+            Long id = 1L;
+            String titleToUpdate = "변경 요청 타이틀";
+            String linkUrlToUpdate = "http://www.linkToUpdate.com";
+            List<String> newTags = List.of("tag1", "tag2");
+
+            var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate, newTags);
+            var requestBody = objectMapper.writeValueAsString(requestDto);
+
+            Member mockMember = mock(Member.class);
+            given(mockMember.getId()).willReturn(1L);
+            given(memberReadService.getMemberById(any())).willReturn(mockMember);
+            given(linkWriteService.updateLink(any(), any(), any(), any(), any()))
+                    .willThrow(new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus()));
+
+            // when
+            // then
+            mockMvc.perform(patch(testApiPath)
+                                    .contentType(APPLICATION_JSON)
+                                    .content(requestBody)
+                                    .param("memberId", "1"))
+                   .andExpect(status().isNotFound())
+                   .andExpect(jsonPath("$.success").value(false))
+                   .andExpect(jsonPath("$.message").value("요청한 자원을 찾을 수 없습니다"))
+                   .andExpect(jsonPath("$.code").value("NOT_FOUND"))
+                   .andExpect(jsonPath("$.data").isEmpty());
+        }
+
         @Test
         @DisplayName("링크의 제목(title)과 url(linkUrl) 모두 유효성 통과를 하지 못하면 400 에러를 반환하고 validation 필드에 에러 메세지가 나간다.")
         void createLink_title_and_link_is_not_valid() throws Exception {
@@ -199,66 +275,6 @@ class LinkControllerTest {
                    .andExpect(jsonPath("$.validation.linkUrl").value("URL 형식을 확인해주세요"));
         }
 
-        @Nested
-        @DisplayName("링크 수정 테스트")
-        class UpdateLinkTest {
-            private final String testApiPath = "/api/v1/link";
-
-            @Test
-            @DisplayName("링크를 수정한다.")
-            void updateLink_success() throws Exception {
-                // given
-                Link mockLink = mock(Link.class);
-                given(mockLink.getId()).willReturn(1L);
-                given(linkWriteService.updateLink(any(), any(), any(), any())).willReturn(mockLink);
-
-                Long id = 1L;
-                String titleAfterUpdate = "변경 후 타이틀";
-                String linkUrlAfterUpdate = "http://www.linkToUpdate.com";
-                List<String> newTags = List.of("tag1", "tag2");
-
-                var requestDto = new UpdateLinkRequest(id, titleAfterUpdate, linkUrlAfterUpdate, newTags);
-                var requestBody = objectMapper.writeValueAsString(requestDto);
-
-                // when
-                // then
-                mockMvc.perform(patch(testApiPath)
-                                        .contentType(APPLICATION_JSON)
-                                        .content(requestBody))
-                       .andExpect(status().isOk())
-                       .andExpect(jsonPath("$.success").value(true))
-                       .andExpect(jsonPath("$.message").value("링크의 수정이 완료되었습니다"))
-                       .andExpect(jsonPath("$.code").value("OK"))
-                       .andExpect(jsonPath("$.data.id").isNotEmpty());
-            }
-
-            @Test
-            @DisplayName("해당하는 id의 링크가 없으면 404 에러를 반환한다.")
-            void updateLink_not_found_link() throws Exception {
-                // given
-                Long id = 1L;
-                String titleToUpdate = "변경 요청 타이틀";
-                String linkUrlToUpdate = "http://www.linkToUpdate.com";
-                List<String> newTags = List.of("tag1", "tag2");
-
-                var requestDto = new UpdateLinkRequest(id, titleToUpdate, linkUrlToUpdate, newTags);
-                var requestBody = objectMapper.writeValueAsString(requestDto);
-
-                given(linkWriteService.updateLink(any(), any(), any(), any()))
-                        .willThrow(new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus()));
-
-                // when
-                // then
-                mockMvc.perform(patch(testApiPath)
-                                        .contentType(APPLICATION_JSON)
-                                        .content(requestBody))
-                       .andExpect(status().isNotFound())
-                       .andExpect(jsonPath("$.success").value(false))
-                       .andExpect(jsonPath("$.message").value("요청한 자원을 찾을 수 없습니다"))
-                       .andExpect(jsonPath("$.code").value("NOT_FOUND"))
-                       .andExpect(jsonPath("$.data").isEmpty());
-            }
-        }
 
         @Test
         @DisplayName("링크의 id가 null이면 400 에러를 반환한다.")
@@ -420,13 +436,18 @@ class LinkControllerTest {
                                                           .mapToObj(id -> new GetLinkListResponse(id, "타이틀-" + id, "https://www.naver.com/" + id, List.of("tag" + id)))
                                                           .toList();
 
-            given(linkReadService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
+            Member mockMember = mock(Member.class);
+            given(mockMember.getId()).willReturn(1L);
+            given(memberReadService.getMemberById(any())).willReturn(mockMember);
+
+            given(linkReadService.getALlLinksByIdAndMemberIdDesc(any(), any(), any())).willReturn(new CursorResult<>(collect, true));
 
             // when
             // then
             mockMvc.perform(get(testApiPath)
                                     .param("id", "1")
-                                    .param("size", "10"))
+                                    .param("size", "10")
+                                    .param("memberId", "1"))
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.success").value(true))
                    .andExpect(jsonPath("$.code").value("OK"))
@@ -443,27 +464,37 @@ class LinkControllerTest {
                                                           .mapToObj(id -> new GetLinkListResponse(id, "타이틀-" + id, "https://www.naver.com/" + id, List.of("tag" + id)))
                                                           .toList();
 
-            given(linkReadService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
+            Member mockMember = mock(Member.class);
+            given(mockMember.getId()).willReturn(1L);
+            given(memberReadService.getMemberById(any())).willReturn(mockMember);
+
+            given(linkReadService.getALlLinksByIdAndMemberIdDesc(any(), any(), any())).willReturn(new CursorResult<>(collect, true));
 
             // when
             // then
             mockMvc.perform(get(testApiPath)
                                     .param("id", "1")
+                                    .param("memberId", "1")
             );
-            verify(linkReadService).getALlLinksByIdDesc(1L, 10);
+            verify(linkReadService).getALlLinksByIdAndMemberIdDesc(1L, 10, 1L);
         }
 
         @Test
         @DisplayName("가지고 있는 링크가 없을 경우 빈 리스트를 리턴한다")
         void getLinks_success_when_link_size_is_zero() throws Exception {
             // given
-            given(linkReadService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(new ArrayList<>(), false));
+            Member mockMember = mock(Member.class);
+            given(mockMember.getId()).willReturn(1L);
+            given(memberReadService.getMemberById(any())).willReturn(mockMember);
+
+            given(linkReadService.getALlLinksByIdAndMemberIdDesc(any(), any(), any())).willReturn(new CursorResult<>(new ArrayList<>(), false));
 
             // when
             // then
             mockMvc.perform(get(testApiPath)
                                     .param("id", "1")
-                                    .param("size", "10"))
+                                    .param("size", "10")
+                                    .param("memberId", "1"))
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.success").value(true))
                    .andExpect(jsonPath("$.code").value("OK"))
@@ -482,13 +513,14 @@ class LinkControllerTest {
         @DisplayName("링크를 조회한다.")
         void getLink_success() throws Exception {
             // given
-            given(linkReadService.getLink(any())).willReturn(new GetLinkResponse(1L, "타이틀", "https://www.naver.com"));
+            given(linkReadService.getLink(any(), any())).willReturn(new GetLinkResponse(1L, "타이틀", "https://www.naver.com"));
 
             // when
             // then
             Long linkIdToGet = 1L;
             mockMvc.perform(get(testApiPath, linkIdToGet)
                                     .contentType(APPLICATION_JSON)
+                                    .param("memberId", "1")
                    )
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.success").value(true))
@@ -501,13 +533,14 @@ class LinkControllerTest {
         @DisplayName("해당하는 id의 링크가 없을 시 예외를 반환한다.")
         void getLink_when_link_not_found() throws Exception {
             // given
-            given(linkReadService.getLink(any()))
+            given(linkReadService.getLink(any(), any()))
                     .willThrow(new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus()));
 
             // when
             // then
             Long linkIdToGet = 1L;
             mockMvc.perform(get(testApiPath, linkIdToGet)
+                                    .param("memberId", "1")
                                     .contentType(APPLICATION_JSON))
                    .andExpect(status().isNotFound())
                    .andExpect(jsonPath("$.success").value(false))

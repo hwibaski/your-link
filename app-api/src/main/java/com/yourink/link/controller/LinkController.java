@@ -6,6 +6,7 @@ import com.yourink.dto.page.CursorResult;
 import com.yourink.link.controller.dto.*;
 import com.yourink.link.service.LinkReadService;
 import com.yourink.link.service.LinkWriteService;
+import com.yourink.member.service.MemberReadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.*;
 public class LinkController {
     private final LinkWriteService linkWriteService;
     private final LinkReadService linkReadService;
+    private final MemberReadService memberReadService;
 
     @PostMapping("/api/v1/link")
     public ResponseEntity<ApiResponse<CreateLinkResponse>> createLink(
-            @Valid @RequestBody CreateLinkRequest createLinkRequest) {
-        var result = linkWriteService.createLink(createLinkRequest.title(), createLinkRequest.linkUrl(), createLinkRequest.tags());
+            @Valid @RequestBody CreateLinkRequest createLinkRequest, @RequestParam("memberId") Long memberId) {
+        var member = memberReadService.getMemberById(memberId);
+        var result = linkWriteService.createLink(createLinkRequest.title(), createLinkRequest.linkUrl(), createLinkRequest.tags(), member);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(ApiResponse.success("링크가 생성되었습니다.", new CreateLinkResponse(result.getId())));
@@ -29,8 +32,9 @@ public class LinkController {
 
     @PatchMapping("/api/v1/link")
     public ResponseEntity<ApiResponse<UpdateLinkResponse>> updateLink(
-            @Valid @RequestBody UpdateLinkRequest updateLinkRequest) {
-        var result = linkWriteService.updateLink(updateLinkRequest.id(), updateLinkRequest.title(), updateLinkRequest.linkUrl(), updateLinkRequest.tags());
+            @Valid @RequestBody UpdateLinkRequest updateLinkRequest, @RequestParam("memberId") Long memberId) {
+        var member = memberReadService.getMemberById(memberId);
+        var result = linkWriteService.updateLink(updateLinkRequest.id(), updateLinkRequest.title(), updateLinkRequest.linkUrl(), updateLinkRequest.tags(), member.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
                              .body(ApiResponse.success("링크의 수정이 완료되었습니다", new UpdateLinkResponse(result.getId())));
@@ -38,8 +42,9 @@ public class LinkController {
 
     @GetMapping("/api/v1/links")
     public ResponseEntity<ApiResponse<CursorResult<GetLinkListResponse>>> getLinks(
-            @ModelAttribute CursorPageSearch cursorPageSearch) {
-        var result = linkReadService.getALlLinksByIdDesc(cursorPageSearch.id(), cursorPageSearch.size());
+            @ModelAttribute CursorPageSearch cursorPageSearch, @RequestParam("memberId") Long memberId) {
+        var member = memberReadService.getMemberById(memberId);
+        var result = linkReadService.getALlLinksByIdAndMemberIdDesc(cursorPageSearch.id(), cursorPageSearch.size(), member.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
                              .body(ApiResponse.success("링크 목록 조회가 완료되었습니다.", result));
@@ -47,8 +52,8 @@ public class LinkController {
 
     @GetMapping("/api/v1/link/{id}")
     public ResponseEntity<ApiResponse<GetLinkResponse>> getLink(
-            @PathVariable("id") Long id) {
-        var result = linkReadService.getLink(id);
+            @PathVariable("id") Long id, @RequestParam("memberId") Long memberId) {
+        var result = linkReadService.getLink(id, memberId);
 
         return ResponseEntity.status(HttpStatus.OK)
                              .body(ApiResponse.success("링크 조회가 완료되었습니다.", result));

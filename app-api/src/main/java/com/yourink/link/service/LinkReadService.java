@@ -27,8 +27,8 @@ public class LinkReadService {
     }
 
     @Transactional(readOnly = true)
-    public CursorResult<GetLinkListResponse> getALlLinksByIdDesc(Long linkId, Integer pageSize) {
-        var links = linkQueryDslRepository.findAllLinksByIdLessThanDesc(linkId, pageSize);
+    public CursorResult<GetLinkListResponse> getALlLinksByIdAndMemberIdDesc(Long linkId, Integer pageSize, Long memberId) {
+        var links = linkQueryDslRepository.findAllLinksByIdLessThanDesc(linkId, pageSize, memberId);
 
 
         return new CursorResult<>(mapLinkListToResponse(links), paginationService.hasNext(links));
@@ -48,8 +48,8 @@ public class LinkReadService {
     }
 
     @Transactional
-    public GetLinkResponse getLink(Long linkId) {
-        var link = linkRepository.findById(linkId)
+    public GetLinkResponse getLink(Long linkId, Long memberId) {
+        var link = linkRepository.findByIdAndMemberId(linkId, memberId)
                                  .orElseThrow(
                                          () -> new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus())
                                  );
@@ -58,8 +58,8 @@ public class LinkReadService {
         return new GetLinkResponse(link.getId(), link.getTitle(), link.getLinkUrl());
     }
 
-    protected Link findLinkByIdWithTag(Long linkId) {
-        return linkQueryDslRepository.findLinkByIdWithTags(linkId)
+    protected Link findLinkByIdAndMemberIdWithTag(Long linkId, Long memberId) {
+        return linkQueryDslRepository.findLinkByIAndMemberIdWithTags(linkId, memberId)
                                      .orElseThrow(
                                              () -> new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus())
                                      );
