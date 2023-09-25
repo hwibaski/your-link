@@ -3,7 +3,12 @@ package com.yourink.domain.tag;
 
 import com.yourink.domain.base.BaseAuditEntity;
 import com.yourink.domain.link.Link;
-import jakarta.persistence.*;
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +34,7 @@ public class TagLinkMap extends BaseAuditEntity {
     public static TagLinkMap create(Link link, Tag tag) {
         var tagLinkMap = new TagLinkMap(link, tag);
         link.addTagLinkMap(tagLinkMap);
-        
+
         return tagLinkMap;
     }
 }

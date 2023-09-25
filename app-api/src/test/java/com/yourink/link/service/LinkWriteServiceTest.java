@@ -78,8 +78,8 @@ class LinkWriteServiceTest {
     @Nested
     @DisplayName("링크 수정 테스트")
     class UpdateLinkTest {
-        @DisplayName("링크를 수정한다.")
         @Test
+        @DisplayName("링크를 수정한다.")
         void update_link_success() {
             // given
             String titleBeforeUpdate = "변경 전 타이틀";
@@ -100,8 +100,8 @@ class LinkWriteServiceTest {
             assertThat(result.getLinkUrl()).isEqualTo(linkUrlAfterUpdate);
         }
 
-        @DisplayName("수정하고자 하는 링크가 없을 경우 예외를 발생시킨다.")
         @Test
+        @DisplayName("수정하고자 하는 링크가 없을 경우 예외를 발생시킨다.")
         void update_link_when_not_found() {
             // given
             // when
@@ -119,8 +119,8 @@ class LinkWriteServiceTest {
         }
 
 
-        @DisplayName("링크 수정 시 입력값으로 받은 태그로 링크의 태그를 변경한다")
         @Test
+        @DisplayName("링크 수정 시 입력값으로 받은 태그로 링크의 태그를 변경한다")
         void update_link_when_tags_changed() {
             // given
             String titleBeforeUpdate = "변경 전 타이틀";
