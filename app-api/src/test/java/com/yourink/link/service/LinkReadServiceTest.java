@@ -54,8 +54,8 @@ class LinkReadServiceTest {
     @Nested
     @DisplayName("링크 리스트 조회 테스트")
     class GetLinksTest {
-        @DisplayName("다수의 링크를 페이지네이션을 통해 조회한다.")
         @Test
+        @DisplayName("다수의 링크를 페이지네이션을 통해 조회한다.")
         void get_links_by_id() {
             // given
             Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
@@ -76,8 +76,8 @@ class LinkReadServiceTest {
                              .size()).isEqualTo(size);
         }
 
-        @DisplayName("링크의 ID를 기준으로 내림차순으로 정렬한다.")
         @Test
+        @DisplayName("링크의 ID를 기준으로 내림차순으로 정렬한다.")
         void get_links_by_id_order_by_desc() {
             // given
             Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
@@ -105,8 +105,8 @@ class LinkReadServiceTest {
                                                             .id());
         }
 
-        @DisplayName("ID가 null일 경우에는 최신순으로 파라미터로 받은 사이즈만큼의 링크를 조회한다.")
         @Test
+        @DisplayName("ID가 null일 경우에는 최신순으로 파라미터로 받은 사이즈만큼의 링크를 조회한다.")
         void get_links_by_id_order_by_desc_when_id_is_null() {
             // given
             Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
@@ -130,8 +130,8 @@ class LinkReadServiceTest {
                              .size()).isEqualTo(size);
         }
 
-        @DisplayName("(cursorId = null 인 경우) - 조회 후 더 조회할 링크가 있으면 hasNext 필드에 true를 반환한다.")
         @Test
+        @DisplayName("(cursorId = null 인 경우) - 조회 후 더 조회할 링크가 있으면 hasNext 필드에 true를 반환한다.")
         void get_links_by_id_order_by_desc_has_next_when_cursor_id_null() {
             // given
             Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
@@ -150,8 +150,8 @@ class LinkReadServiceTest {
             assertThat(result.hasNext()).isTrue();
         }
 
-        @DisplayName("(cursorId != null 인 경우) - 조회 후 더 조회할 링크가 있으면 hasNext 필드에 true를 반환한다.")
         @Test
+        @DisplayName("(cursorId != null 인 경우) - 조회 후 더 조회할 링크가 있으면 hasNext 필드에 true를 반환한다.")
         void get_links_by_id_order_by_desc_has_next_when_cursor_id_not_null() {
             // given
             Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
@@ -171,8 +171,8 @@ class LinkReadServiceTest {
             assertThat(result.hasNext()).isTrue();
         }
 
-        @DisplayName("(cursorId = null 인 경우) - 조회 후 더 조회할 링크가 없으면 hasNext 필드에 false를 반환한다.")
         @Test
+        @DisplayName("(cursorId = null 인 경우) - 조회 후 더 조회할 링크가 없으면 hasNext 필드에 false를 반환한다.")
         void get_links_by_id_order_by_desc_has_next_false_when_cursor_id_null() {
             // given
             Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
@@ -191,8 +191,8 @@ class LinkReadServiceTest {
             assertThat(result.hasNext()).isFalse();
         }
 
-        @DisplayName("(cursorId != null 인 경우) - 조회 후 더 조회할 링크가 없으면 hasNext 필드에 false를 반환한다.")
         @Test
+        @DisplayName("(cursorId != null 인 경우) - 조회 후 더 조회할 링크가 없으면 hasNext 필드에 false를 반환한다.")
         void get_links_by_id_order_by_desc_has_next_false_when_cursor_id_not_null() {
             // given
             Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
@@ -215,8 +215,8 @@ class LinkReadServiceTest {
     @Nested
     @DisplayName("단일 링크 조회 테스트")
     class getLinkTest {
-        @DisplayName("단일 링크를 id를 이용해 조회한다")
         @Test
+        @DisplayName("단일 링크를 id를 이용해 조회한다")
         void get_link_by_id_without_tag() {
             // given
             Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
@@ -233,8 +233,8 @@ class LinkReadServiceTest {
             assertThat(result.linkUrl()).isEqualTo(savedLink.getLinkUrl());
         }
 
-        @DisplayName("해당 하는 id의 링크가 없을 경우 예외를 발생시킨다.")
         @Test
+        @DisplayName("해당 하는 id의 링크가 없을 경우 예외를 발생시킨다.")
         void get_link_by_id_not_found() {
             // given
             // when
@@ -246,8 +246,8 @@ class LinkReadServiceTest {
                     .hasMessage(ErrorCode.NOT_FOUND.getMessage());
         }
 
-        @DisplayName("링크 조회수 증가 테스트")
         @Test
+        @DisplayName("링크 조회수 증가 테스트")
         void get_link_increase_count() {
             // given
             Member savedMember = memberRepository.save(Member.create("test@gmail.com"));

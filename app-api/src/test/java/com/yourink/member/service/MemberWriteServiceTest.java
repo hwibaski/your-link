@@ -46,8 +46,8 @@ class MemberWriteServiceTest {
             assertThat(result.email()).isEqualTo(email);
         }
 
-        @DisplayName("중복된 email으로는 멤버를 생성할 수 없다")
         @Test
+        @DisplayName("중복된 email으로는 멤버를 생성할 수 없다")
         void create_member_duplicated_email() {
             // given
             String email = "temp@gmail.com";

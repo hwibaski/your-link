@@ -39,8 +39,8 @@ class LinkStatReadServiceTest {
     @Nested()
     @DisplayName("총 링크의 갯수 조회 테스트")
     class LinkStatReadTest {
-        @DisplayName("링크 통계를 조회한다.")
         @Test
+        @DisplayName("링크 통계를 조회한다.")
         void read_link_stat() {
             // given
             Member savedMember = memberRepository.save(Member.create("test@gmail.com"));
@@ -58,8 +58,8 @@ class LinkStatReadServiceTest {
             assertThat(result.count()).isEqualTo(links.size());
         }
 
-        @DisplayName("링크가 하나도 생성되지 않았을 시 0을 리턴한다.")
         @Test
+        @DisplayName("링크가 하나도 생성되지 않았을 시 0을 리턴한다.")
         void read_link_stat_when_link_count_zero() {
             // given
             // when
