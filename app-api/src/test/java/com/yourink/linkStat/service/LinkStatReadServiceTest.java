@@ -55,7 +55,7 @@ class LinkStatReadServiceTest {
             var result = linkStatReadService.countAll();
 
             // then
-            assertThat(result).isEqualTo(links.size());
+            assertThat(result.count()).isEqualTo(links.size());
         }
 
         @DisplayName("링크가 하나도 생성되지 않았을 시 0을 리턴한다.")
@@ -66,7 +66,7 @@ class LinkStatReadServiceTest {
             var result = linkStatReadService.countAll();
 
             // then
-            assertThat(result).isEqualTo(0L);
+            assertThat(result.count()).isEqualTo(0L);
         }
     }
 }
