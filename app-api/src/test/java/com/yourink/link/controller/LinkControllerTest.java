@@ -436,13 +436,18 @@ class LinkControllerTest {
                                                           .mapToObj(id -> new GetLinkListResponse(id, "타이틀-" + id, "https://www.naver.com/" + id, List.of("tag" + id)))
                                                           .toList();
 
-            given(linkReadService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
+            Member mockMember = mock(Member.class);
+            given(mockMember.getId()).willReturn(1L);
+            given(memberReadService.getMemberById(any())).willReturn(mockMember);
+
+            given(linkReadService.getALlLinksByIdAndMemberIdDesc(any(), any(), any())).willReturn(new CursorResult<>(collect, true));
 
             // when
             // then
             mockMvc.perform(get(testApiPath)
                                     .param("id", "1")
-                                    .param("size", "10"))
+                                    .param("size", "10")
+                                    .param("memberId", "1"))
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.success").value(true))
                    .andExpect(jsonPath("$.code").value("OK"))
@@ -459,27 +464,37 @@ class LinkControllerTest {
                                                           .mapToObj(id -> new GetLinkListResponse(id, "타이틀-" + id, "https://www.naver.com/" + id, List.of("tag" + id)))
                                                           .toList();
 
-            given(linkReadService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(collect, true));
+            Member mockMember = mock(Member.class);
+            given(mockMember.getId()).willReturn(1L);
+            given(memberReadService.getMemberById(any())).willReturn(mockMember);
+
+            given(linkReadService.getALlLinksByIdAndMemberIdDesc(any(), any(), any())).willReturn(new CursorResult<>(collect, true));
 
             // when
             // then
             mockMvc.perform(get(testApiPath)
                                     .param("id", "1")
+                                    .param("memberId", "1")
             );
-            verify(linkReadService).getALlLinksByIdDesc(1L, 10);
+            verify(linkReadService).getALlLinksByIdAndMemberIdDesc(1L, 10, 1L);
         }
 
         @Test
         @DisplayName("가지고 있는 링크가 없을 경우 빈 리스트를 리턴한다")
         void getLinks_success_when_link_size_is_zero() throws Exception {
             // given
-            given(linkReadService.getALlLinksByIdDesc(any(), any())).willReturn(new CursorResult<>(new ArrayList<>(), false));
+            Member mockMember = mock(Member.class);
+            given(mockMember.getId()).willReturn(1L);
+            given(memberReadService.getMemberById(any())).willReturn(mockMember);
+
+            given(linkReadService.getALlLinksByIdAndMemberIdDesc(any(), any(), any())).willReturn(new CursorResult<>(new ArrayList<>(), false));
 
             // when
             // then
             mockMvc.perform(get(testApiPath)
                                     .param("id", "1")
-                                    .param("size", "10"))
+                                    .param("size", "10")
+                                    .param("memberId", "1"))
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.success").value(true))
                    .andExpect(jsonPath("$.code").value("OK"))

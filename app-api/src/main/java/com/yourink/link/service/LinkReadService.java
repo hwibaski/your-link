@@ -27,8 +27,8 @@ public class LinkReadService {
     }
 
     @Transactional(readOnly = true)
-    public CursorResult<GetLinkListResponse> getALlLinksByIdDesc(Long linkId, Integer pageSize) {
-        var links = linkQueryDslRepository.findAllLinksByIdLessThanDesc(linkId, pageSize);
+    public CursorResult<GetLinkListResponse> getALlLinksByIdAndMemberIdDesc(Long linkId, Integer pageSize, Long memberId) {
+        var links = linkQueryDslRepository.findAllLinksByIdLessThanDesc(linkId, pageSize, memberId);
 
 
         return new CursorResult<>(mapLinkListToResponse(links), paginationService.hasNext(links));

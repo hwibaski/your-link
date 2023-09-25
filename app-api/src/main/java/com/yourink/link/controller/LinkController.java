@@ -42,8 +42,9 @@ public class LinkController {
 
     @GetMapping("/api/v1/links")
     public ResponseEntity<ApiResponse<CursorResult<GetLinkListResponse>>> getLinks(
-            @ModelAttribute CursorPageSearch cursorPageSearch) {
-        var result = linkReadService.getALlLinksByIdDesc(cursorPageSearch.id(), cursorPageSearch.size());
+            @ModelAttribute CursorPageSearch cursorPageSearch, @RequestParam("memberId") Long memberId) {
+        var member = memberReadService.getMemberById(memberId);
+        var result = linkReadService.getALlLinksByIdAndMemberIdDesc(cursorPageSearch.id(), cursorPageSearch.size(), member.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
                              .body(ApiResponse.success("링크 목록 조회가 완료되었습니다.", result));

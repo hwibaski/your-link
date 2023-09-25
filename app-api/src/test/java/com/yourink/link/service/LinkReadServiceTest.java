@@ -68,8 +68,8 @@ class LinkReadServiceTest {
 
             // when
             int size = 5;
-            var result = linkReadService.getALlLinksByIdDesc(links.get(5)
-                                                                  .getId(), size);
+            var result = linkReadService.getALlLinksByIdAndMemberIdDesc(links.get(5)
+                                                                             .getId(), size, savedMember.getId());
 
             // then
             assertThat(result.data()
@@ -90,8 +90,8 @@ class LinkReadServiceTest {
 
             // when
             int size = 5;
-            var result = linkReadService.getALlLinksByIdDesc(links.get(5)
-                                                                  .getId(), size);
+            var result = linkReadService.getALlLinksByIdAndMemberIdDesc(links.get(5)
+                                                                             .getId(), size, savedMember.getId());
 
             // then
             assertThat(isListInDescendingOrder(result.data())).isTrue();
@@ -119,7 +119,7 @@ class LinkReadServiceTest {
 
             // when
             int size = 5;
-            var result = linkReadService.getALlLinksByIdDesc(null, size);
+            var result = linkReadService.getALlLinksByIdAndMemberIdDesc(null, size, savedMember.getId());
 
             // then
             assertThat(result.data()
@@ -144,7 +144,7 @@ class LinkReadServiceTest {
 
             // when
             int size = 5;
-            var result = linkReadService.getALlLinksByIdDesc(null, size);
+            var result = linkReadService.getALlLinksByIdAndMemberIdDesc(null, size, savedMember.getId());
 
             // then
             assertThat(result.hasNext()).isTrue();
@@ -164,8 +164,8 @@ class LinkReadServiceTest {
 
             // when
             int size = 5;
-            var result = linkReadService.getALlLinksByIdDesc(links.get(9)
-                                                                  .getId(), size);
+            var result = linkReadService.getALlLinksByIdAndMemberIdDesc(links.get(9)
+                                                                             .getId(), size, savedMember.getId());
 
             // then
             assertThat(result.hasNext()).isTrue();
@@ -185,7 +185,7 @@ class LinkReadServiceTest {
 
             // when
             int size = 5;
-            var result = linkReadService.getALlLinksByIdDesc(null, size);
+            var result = linkReadService.getALlLinksByIdAndMemberIdDesc(null, size, savedMember.getId());
 
             // then
             assertThat(result.hasNext()).isFalse();
@@ -205,7 +205,7 @@ class LinkReadServiceTest {
 
             // when
             int size = 5;
-            var result = linkReadService.getALlLinksByIdDesc(1L, size);
+            var result = linkReadService.getALlLinksByIdAndMemberIdDesc(1L, size, savedMember.getId());
 
             // then
             assertThat(result.hasNext()).isFalse();
