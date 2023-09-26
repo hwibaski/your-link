@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  database:
+    container_name: postgresql_db
+    image: postgres:13
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=your_link
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - TZ=Asia/Seoul
+    ports:
+      - "5432:5432"
+    networks:
+      - api_network
+
+  api-server:
+    container_name: api_server
+    platform: linux/amd64
+    restart: on-failure
+    build:
+      context: ./app-api
+      dockerfile: dev.Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    networks:
+      - api_network
+
+networks:
+  api_network:
