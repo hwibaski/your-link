@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class TagController {
     private final TagReadService tagReadService;
 
-    @GetMapping("/api/tags")
+    @GetMapping("/api/v1/tags")
     public ResponseEntity<ApiResponse<GetTagListByLinkResponse>> getTagsByLink(@RequestParam Long linkId) {
         var result = tagReadService.getTagsByLink(linkId);
 
         return ResponseEntity.status(HttpStatus.OK)
-                             .body(ApiResponse.success("태그 목록 조회가 완료되었습니다.", result));
+                .body(ApiResponse.success("태그 목록 조회가 완료되었습니다.", result));
     }
 }

@@ -22,6 +22,6 @@ public class MemberController {
         var result = memberWriteService.createMember(createMemberRequest.email());
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                             .body(ApiResponse.success("멤버가 생성되었습니다.", new CreateMemberResponse(result.id(), result.email())));
+                .body(ApiResponse.success("멤버가 생성되었습니다.", new CreateMemberResponse(result.id())));
     }
 }
