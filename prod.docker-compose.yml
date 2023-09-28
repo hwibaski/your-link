@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  api-server:
+    container_name: api_server
+    platform: linux/amd64
+    restart: on-failure
+    build:
+      context: ./app-api
+      dockerfile: prod.Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - "8080:8080"
+    networks:
+      - api_network
+
+networks:
+  api_network:

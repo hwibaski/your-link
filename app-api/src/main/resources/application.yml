@@ -8,7 +8,7 @@ spring:
   profiles:
     active: prod
   datasource:
-    url: jdbc:postgresql://localhost:5432/your_link
+    url: jdbc:postgresql://your-link-rds-001.csckotwfrcog.ap-northeast-2.rds.amazonaws.com:5432/your_link
     username: test
     password: test
     driver-class-name: org.postgresql.Driver
@@ -17,7 +17,9 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
+        default_batch_fetch_size: 100
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
   flyway:
     enabled: true
     url: jdbc:postgresql://localhost:5432/your_link
@@ -31,7 +33,7 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:postgresql://localhost:5432/your_link
+    url: jdbc:postgresql://postgresql_db:5432/your_link
     username: test
     password: test
     driver-class-name: org.postgresql.Driver
@@ -40,6 +42,16 @@ spring:
       ddl-auto: create-drop
     properties:
       hibernate:
+        default_batch_fetch_size: 100
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
   flyway:
     enabled: false
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          sql: trace
