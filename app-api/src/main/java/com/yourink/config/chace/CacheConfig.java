@@ -1,7 +1,6 @@
-package com.yourink.config;
+package com.yourink.config.chace;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.yourink.config.chace.CacheType;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
