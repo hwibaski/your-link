@@ -29,7 +29,8 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          submodules: true
+          submodules: recursive
+          token: ${{ secrets.CONFIG_REPO_SECRET }}
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
