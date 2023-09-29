@@ -45,3 +45,13 @@ bootJar {
 jar {
     enabled = false
 }
+
+tasks.register('copyPrivate', Copy) {
+    copy {
+        from '../your-link-config'
+        include "*.yml"
+        into 'src/main/resources'
+    }
+}
+
+tasks.build.dependsOn copyPrivate
