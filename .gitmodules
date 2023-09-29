@@ -1,0 +1,3 @@
+[submodule "your-link-config"]
+	path = your-link-config
+	url = https://github.com/hwibaski/your-link-config/
